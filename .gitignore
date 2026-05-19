@@ -1,0 +1,43 @@
+# Generated / compiled output
+*.md
+*.py
+*.json
+*.xml
+*.yaml
+*.yml
+*.html
+*.css
+*.js
+*.ts
+
+# Exceptions — core tracked files are committed before this rule applies
+# Use: git add -f <file> to force-track a specific file
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+
+# Node
+node_modules/
+.npm/
+
+# Environment
+.env
+.env.*
+*.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
