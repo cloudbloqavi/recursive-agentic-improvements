@@ -96,7 +96,7 @@ install.ps1                      # PowerShell installer
 
 - [Claude Code CLI](https://claude.ai/code) installed and authenticated
 - Target framework installed in your project (`agno`, `crewai`, `langgraph`, or `google-adk`)
-- For Agno and LangGraph/LangSmith: MCP servers configured (see below)
+- MCP servers for Agno and LangGraph are optional but strongly recommended — the skills will detect if they are missing and print setup instructions (see [Recommended MCP Servers](#recommended-mcp-servers) below)
 
 ### Skill 1 — Create a New Agent
 
@@ -148,12 +148,46 @@ Three platform requirements must be in place for the recursive improvement loop 
 
 ### Recommended MCP Servers
 
-| Framework | MCP Setup |
-|---|---|
-| Agno | `transport: streamable-http`, `url: https://docs.agno.com/mcp` |
-| LangGraph / LangSmith | LangSmith MCP server (see LangSmith docs) |
-| Google ADK | Add `https://adk.dev/llms-full.txt` as a context document |
-| CrewAI | Add docs via WebFetch or configure a local MCP proxy |
+Each skill **automatically checks** whether the relevant MCP server is available when it runs. If an MCP server is missing, the skill prints the exact setup snippet and tells you whether it is safe to continue or whether you should configure MCP first.
+
+| Framework | How docs are fetched | Blocking if missing? |
+|---|---|---|
+| Agno | MCP server at `https://docs.agno.com/mcp` | Warn + continue (`/create-agent`, `/improve-agent`); ask user (`/extend-agent`) |
+| LangGraph | MCP server — see [LangSmith MCP docs](https://docs.smith.langchain.com/how_to_guides/mcp) | Warn + continue (`/create-agent`, `/improve-agent`); ask user (`/extend-agent`) |
+| Google ADK | WebFetch `https://google.github.io/adk-docs/llms.txt` | Warn + continue |
+| CrewAI | WebFetch `https://docs.crewai.com/llms.txt` | Warn + continue |
+
+#### Setting up MCP servers in Claude Code
+
+Add MCP servers to your project's `.claude/settings.json` (or `~/.claude/settings.json` for global config):
+
+**Agno:**
+```json
+{
+  "mcpServers": {
+    "agno-docs": {
+      "type": "http",
+      "url": "https://docs.agno.com/mcp"
+    }
+  }
+}
+```
+
+**LangGraph / LangSmith:**
+```json
+{
+  "mcpServers": {
+    "langchain-docs": {
+      "type": "http",
+      "url": "<url from https://docs.smith.langchain.com/how_to_guides/mcp>"
+    }
+  }
+}
+```
+
+After adding MCP servers, restart Claude Code for them to take effect.
+
+Google ADK and CrewAI do not have dedicated MCP servers — the skills fetch their docs via `WebFetch` automatically.
 
 ---
 
