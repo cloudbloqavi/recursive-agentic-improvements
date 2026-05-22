@@ -1,18 +1,20 @@
 # Recursive Agentic Improvements
 
-A collection of Claude Code workflow documents for **creating**, **improving**, and **extending** AI agents across major agentic frameworks. Inspired by the recursive agent improvement methodology described by the Agno AI founder.
+A collection of Claude Code **skills** (slash commands) for **creating**, **improving**, and **extending** AI agents across major agentic frameworks. Inspired by the recursive agent improvement methodology described by the Agno AI founder.
 
 ---
 
 ## What This Repository Is
 
-This repo provides three reusable Claude Code runbooks per framework and use case:
+Three self-contained Claude Code skills you can install into any agentic project:
 
-| File | Purpose |
-|---|---|
-| `create-new-agent.md` | Scaffold a new agent from scratch with proper structure, instructions, and tools |
-| `improve-agent.md` | Recursively test and improve an existing agent against its own spec |
-| `extend-agent.md` | Add a new capability, tool, or behaviour to an existing agent |
+| Skill | Slash command | Purpose |
+|---|---|---|
+| `create-agent.md` | `/create-agent` | Scaffold a new agent from scratch with proper structure, instructions, and tools |
+| `improve-agent.md` | `/improve-agent` | Recursively test and improve an existing agent against its own spec |
+| `extend-agent.md` | `/extend-agent` | Add a new capability, tool, or behaviour to an existing agent |
+
+Each skill is **self-contained**: it embeds all framework-specific guidance so it works in your own project without this repo present.
 
 ### Supported Frameworks
 
@@ -25,22 +27,53 @@ This repo provides three reusable Claude Code runbooks per framework and use cas
 
 ---
 
+## Quick Install
+
+Copy the three skill files into your project's `.claude/commands/` directory.
+
+**macOS / Linux:**
+```bash
+# From inside this repo:
+./install.sh /path/to/your-agentic-project
+
+# Or install into the current directory:
+./install.sh
+```
+
+**Windows (PowerShell):**
+```powershell
+# From inside this repo:
+.\install.ps1 -TargetProject C:\path\to\your-agentic-project
+
+# Or install into the current directory:
+.\install.ps1
+```
+
+**Manual copy:**
+```bash
+cp .claude/commands/*.md /path/to/your-agentic-project/.claude/commands/
+```
+
+After installing, open Claude Code inside your project and use `/create-agent`, `/improve-agent`, or `/extend-agent`.
+
+---
+
 ## Repository Structure
 
 ```
-docs/
-├── create-new-agent.md          # Framework-agnostic entry point
-├── improve-agent.md             # Framework-agnostic entry point
-├── extend-agent.md              # Framework-agnostic entry point
+.claude/
+└── commands/                    # ← Skills (install these into your project)
+    ├── create-agent.md          # /create-agent skill
+    ├── improve-agent.md         # /improve-agent skill
+    └── extend-agent.md          # /extend-agent skill
+
+docs/                            # Reference documentation (per-framework guides)
+├── create-new-agent.md          # Framework-agnostic reference
+├── improve-agent.md
+├── extend-agent.md
 ├── agno/
 │   ├── chatbot/
-│   │   ├── create-new-agent.md
-│   │   ├── improve-agent.md
-│   │   └── extend-agent.md
 │   └── research-assistant/
-│       ├── create-new-agent.md
-│       ├── improve-agent.md
-│       └── extend-agent.md
 ├── crewai/
 │   ├── research-crew/
 │   └── content-pipeline/
@@ -50,6 +83,9 @@ docs/
 └── google-adk/
     ├── chatbot/
     └── tool-using-agent/
+
+install.sh                       # Bash installer
+install.ps1                      # PowerShell installer
 ```
 
 ---
@@ -62,41 +98,43 @@ docs/
 - Target framework installed in your project (`agno`, `crewai`, `langgraph`, or `google-adk`)
 - For Agno and LangGraph/LangSmith: MCP servers configured (see below)
 
-### Workflow 1 — Create a New Agent
+### Skill 1 — Create a New Agent
 
 Open Claude Code in your project directory and type:
 
 ```
-Run docs/create-new-agent.md in a new branch
+/create-agent agno chatbot
 ```
 
-Claude Code will ask a few questions, select the right framework sub-guide, scaffold the agent, and run smoke tests.
+Or just `/create-agent` to be prompted. Claude Code asks questions, selects the right framework guide, scaffolds the agent, runs smoke tests, and commits.
 
-### Workflow 2 — Improve an Existing Agent
-
+Supported shorthand:
 ```
-Run docs/improve-agent.md
-```
-
-Claude Code reads your agent's `INSTRUCTIONS`, derives 8–12 test probes, runs them against the live agent, judges PASS/FAIL, applies targeted fixes, and iterates until all probes pass.
-
-### Workflow 3 — Extend an Agent
-
-```
-Run docs/extend-agent.md
+/create-agent agno chatbot
+/create-agent agno research-assistant
+/create-agent crewai research-crew
+/create-agent crewai content-pipeline
+/create-agent langgraph react-agent
+/create-agent langgraph multi-agent-supervisor
+/create-agent google-adk chatbot
+/create-agent google-adk tool-using-agent
 ```
 
-Claude Code asks what capability you want to add, searches framework documentation, plans the change, implements it, and validates.
-
-### Using Framework-Specific Guides Directly
-
-You can also invoke a specific guide:
+### Skill 2 — Improve an Existing Agent
 
 ```
-Run docs/agno/research-assistant/improve-agent.md
-Run docs/langgraph/react-agent/create-new-agent.md
-Run docs/crewai/research-crew/extend-agent.md
+/improve-agent agno agents/my-bot/agent.py
 ```
+
+Or just `/improve-agent`. Claude Code reads your agent's `INSTRUCTIONS`, derives 10 test probes, runs them against the live agent, judges PASS/FAIL, applies targeted fixes, and iterates until all probes pass.
+
+### Skill 3 — Extend an Agent
+
+```
+/extend-agent langgraph src/my-agent
+```
+
+Or just `/extend-agent`. Claude Code asks what capability you want to add, searches framework documentation, writes the plan (with your confirmation), implements it, and validates against 2+ new probes plus a regression check.
 
 ---
 
