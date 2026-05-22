@@ -64,6 +64,46 @@ logging.basicConfig(level=logging.DEBUG)
 
 ---
 
+## Step 3b — Verify Framework MCP Server
+
+Framework docs MCP servers give Claude access to **current** API documentation during the fix loop. This is especially important for the improve workflow: when a probe fails because an API changed, MCP lets you look up the correct current API rather than guessing from training data.
+
+For the chosen framework, attempt to call the MCP tool below. If available, use it whenever diagnosing failures that may be caused by API changes. If not available, output the warning and continue.
+
+| Framework | MCP tool to try |
+|---|---|
+| Agno | `search_agno` or `query_docs_filesystem_agno` |
+| LangGraph | `search_docs_by_lang_chain` or `query_docs_filesystem_docs_by_lang_chain` |
+| Google ADK | WebFetch `https://google.github.io/adk-docs/llms.txt` |
+| CrewAI | WebFetch `https://docs.crewai.com/llms.txt` |
+
+**If the Agno MCP tool is not available**, output:
+```
+⚠ Agno docs MCP not detected.
+  Fix diagnostics may use outdated Agno APIs.
+  To enable: add to .claude/settings.json under "mcpServers":
+
+    "agno-docs": {
+      "type": "http",
+      "url": "https://docs.agno.com/mcp"
+    }
+
+  Then restart Claude Code. Continuing without live docs.
+```
+
+**If the LangGraph MCP tool is not available**, output:
+```
+⚠ LangChain/LangGraph docs MCP not detected.
+  Fix suggestions may use outdated LangGraph/LangSmith APIs.
+  To enable: see https://docs.smith.langchain.com/how_to_guides/mcp
+  Add the server to .claude/settings.json, then restart Claude Code.
+  Continuing without live docs.
+```
+
+For Google ADK and CrewAI: if WebFetch is unavailable, note that fix suggestions will be based on training data only.
+
+---
+
 ## Step 4 — Derive 10 Probes
 
 Generate exactly 10 probes from the spec. Distribute across these categories:

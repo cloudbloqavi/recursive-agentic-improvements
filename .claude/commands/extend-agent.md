@@ -45,6 +45,53 @@ Before changing anything:
 
 ## Step 3 — Search Framework Documentation
 
+**Before searching**, check if the recommended MCP server is available for the chosen framework. The extend workflow depends heavily on current API patterns — using training-data knowledge risks broken imports, wrong parameter names, or deprecated patterns.
+
+For the chosen framework, attempt to call the MCP tool below now:
+
+| Framework | MCP tool to try | What it covers |
+|---|---|---|
+| Agno | `search_agno` or `query_docs_filesystem_agno` | All Agno APIs — 120+ tools, memory, structured output, HITL, MCP integration |
+| LangGraph | `search_docs_by_lang_chain` or `query_docs_filesystem_docs_by_lang_chain` | LangGraph nodes, edges, tools, interrupts, sub-graphs |
+| Google ADK | WebFetch `https://google.github.io/adk-docs/llms.txt` | Full ADK reference — agent-as-tool, callbacks, sub-agents |
+| CrewAI | WebFetch `https://docs.crewai.com/llms.txt` | Full CrewAI docs — agents, tasks, tools, process types |
+
+**If the Agno MCP tool is not available**, output this warning and stop the doc search step:
+```
+⚠ Agno docs MCP not detected. This is critical for /extend-agent —
+  without live docs, generated tool imports and API patterns will be
+  based on training data and may not match the installed agno version.
+
+  To fix: add to .claude/settings.json under "mcpServers":
+
+    "agno-docs": {
+      "type": "http",
+      "url": "https://docs.agno.com/mcp"
+    }
+
+  Restart Claude Code and re-run /extend-agent.
+
+  Alternatively, continue and manually verify all generated imports
+  against your installed agno version: python -c "import agno; help(agno)"
+```
+Then ask the user: "MCP is not available. Do you want to continue without live docs (generated code may need manual verification), or stop and configure MCP first?"
+
+**If the LangGraph MCP tool is not available**, output:
+```
+⚠ LangChain/LangGraph docs MCP not detected.
+  Generated graph and tool code may use outdated APIs.
+  Setup: https://docs.smith.langchain.com/how_to_guides/mcp
+  Add to .claude/settings.json under "mcpServers", restart Claude Code.
+
+  Alternatively, continue and verify all generated code against:
+  https://langchain-ai.github.io/langgraph/
+```
+Then ask the user whether to continue or stop.
+
+**If Google ADK or CrewAI WebFetch fails**, output a brief warning noting that doc lookups will use training data, then continue.
+
+**If MCP / WebFetch is available**, use it for every API lookup in the steps below. Do not rely on training-data memory for any specific class name, parameter name, or import path.
+
 Use the available MCP server or Context7 to find the correct API for the new capability. Do not implement from memory — always verify against current docs.
 
 Key documentation sections by framework:

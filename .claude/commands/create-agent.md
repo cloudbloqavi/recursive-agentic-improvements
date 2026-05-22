@@ -74,6 +74,49 @@ Required API key checks:
 
 Warn if any required key appears unset, but do not block — the user may set it in `.env`.
 
+### MCP Server Check
+
+Framework docs MCP servers let Claude look up **current** APIs in real time instead of relying on training-data knowledge. Without them, generated imports, parameter names, and patterns may be outdated or wrong.
+
+For the chosen framework, attempt to call the MCP tool listed below. If the call succeeds, use that MCP server throughout this entire workflow whenever you need to look up an API, parameter, or pattern. If the call fails or the tool does not exist, output the warning block for that framework and continue — MCP is strongly recommended but not a hard blocker.
+
+| Framework | MCP tool to try | What it covers |
+|---|---|---|
+| Agno | `search_agno` (or `query_docs_filesystem_agno`) | All Agno APIs — agents, tools, memory, eval, MCP integration |
+| LangGraph | `search_docs_by_lang_chain` (or `query_docs_filesystem_docs_by_lang_chain`) | LangGraph, LangChain, LangSmith APIs |
+| Google ADK | Use WebFetch on `https://google.github.io/adk-docs/llms.txt` | Full ADK reference in LLM-readable format |
+| CrewAI | Use WebFetch on `https://docs.crewai.com/llms.txt` | Full CrewAI docs in LLM-readable format |
+
+**If the Agno MCP tool is not available**, output this exactly:
+```
+⚠ Agno docs MCP not detected.
+  Generated code may use outdated tool imports or API signatures.
+  To fix: add to .claude/settings.json under "mcpServers":
+
+    "agno-docs": {
+      "type": "http",
+      "url": "https://docs.agno.com/mcp"
+    }
+
+  Then restart Claude Code and re-run /create-agent.
+  Continuing with training-data knowledge — verify generated imports manually.
+```
+
+**If the LangGraph MCP tool is not available**, output this exactly:
+```
+⚠ LangChain/LangGraph docs MCP not detected.
+  Generated graph code may use outdated LangGraph APIs.
+  To fix: see https://docs.smith.langchain.com/how_to_guides/mcp for current setup,
+  add the server to .claude/settings.json under "mcpServers", then restart Claude Code.
+  Continuing with training-data knowledge — verify generated code against current LangGraph docs.
+```
+
+**If Google ADK WebFetch fails**, note: "ADK docs unavailable — responses based on training data only. Verify patterns at https://google.github.io/adk-docs/."
+
+**If CrewAI WebFetch fails**, note: "CrewAI docs unavailable — responses based on training data only. Verify patterns at https://docs.crewai.com."
+
+After the check (pass or fail), proceed to Step 3.
+
 ---
 
 ## Step 3 — Create Feature Branch
