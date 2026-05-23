@@ -18,12 +18,14 @@ Each skill is **self-contained**: it embeds all framework-specific guidance so i
 
 ### Supported Frameworks
 
-| Framework | Use Cases Covered |
-|---|---|
-| [Agno](https://docs.agno.com) | Chatbot, Research Assistant |
-| [CrewAI](https://docs.crewai.com) | Research Crew, Content Pipeline |
-| [LangGraph](https://langchain-ai.github.io/langgraph/) | ReAct Agent, Multi-Agent Supervisor |
-| [Google ADK](https://google.github.io/adk-docs/) | Chatbot, Tool-Using Agent |
+The skills work for **any domain** — not a fixed list of presets. The research phase discovers what tools and APIs exist for your specific use case before writing code.
+
+| Framework | Docs source | Example domains |
+|---|---|---|
+| [Agno](https://docs.agno.com) | MCP + WebFetch | Travel, legal, customer support, finance, healthcare |
+| [CrewAI](https://docs.crewai.com) | MCP + WebFetch | Research crews, content pipelines, HR automation, competitive intelligence |
+| [LangGraph](https://langchain-ai.github.io/langgraph/) | MCP + WebFetch | DevOps agents, multi-agent supervisors, ReAct agents, data pipelines |
+| [Google ADK](https://google.github.io/adk-docs/) | WebFetch | IoT monitoring, appointment scheduling, tool-using assistants |
 
 ---
 
@@ -96,28 +98,50 @@ install.ps1                      # PowerShell installer
 
 - [Claude Code CLI](https://claude.ai/code) installed and authenticated
 - Target framework installed in your project (`agno`, `crewai`, `langgraph`, or `google-adk`)
-- MCP servers for Agno and LangGraph are optional but strongly recommended — the skills will detect if they are missing and print setup instructions (see [Recommended MCP Servers](#recommended-mcp-servers) below)
+- MCP servers for Agno, LangGraph, and CrewAI are optional but strongly recommended — the skills auto-detect if they are missing and print the exact setup snippet (see [Recommended MCP Servers](#recommended-mcp-servers) below)
 
 ### Skill 1 — Create a New Agent
 
-Open Claude Code in your project directory and type:
+These skills are **not limited to preset use cases**. Describe your agent in plain English — the research phase discovers the right tools and APIs for your domain before writing a single line of code.
+
+Open Claude Code in your project directory and describe what you want:
 
 ```
-/create-agent agno chatbot
+/create-agent agno a travel assistant that searches flights, books hotels, and sends confirmation emails
 ```
 
-Or just `/create-agent` to be prompted. Claude Code asks questions, selects the right framework guide, scaffolds the agent, runs smoke tests, and commits.
-
-Supported shorthand:
 ```
-/create-agent agno chatbot
-/create-agent agno research-assistant
-/create-agent crewai research-crew
-/create-agent crewai content-pipeline
-/create-agent langgraph react-agent
-/create-agent langgraph multi-agent-supervisor
-/create-agent google-adk chatbot
-/create-agent google-adk tool-using-agent
+/create-agent crewai a competitive intelligence crew that monitors competitor pricing and generates weekly reports
+```
+
+```
+/create-agent langgraph a DevOps automation agent that monitors CI pipelines, diagnoses failures, and opens GitHub issues
+```
+
+```
+/create-agent google-adk a medical appointment scheduler that checks doctor availability and sends SMS reminders
+```
+
+Or just `/create-agent` with no arguments — Claude Code will ask you everything it needs, including which framework to use and a free-form description of what the agent should do.
+
+**You are not limited to these examples.** Any domain works:
+
+| Domain | Example prompt |
+|---|---|
+| Legal | `/create-agent agno a legal document summariser that extracts clauses and flags risks` |
+| Finance | `/create-agent langgraph a portfolio monitor that tracks holdings and alerts on threshold breaches` |
+| HR | `/create-agent crewai an HR onboarding crew that generates offer letters and sends welcome packs` |
+| IoT / DevOps | `/create-agent google-adk an infrastructure agent that reads Datadog alerts and triggers runbooks` |
+| E-commerce | `/create-agent agno a customer support bot for a SaaS product that handles billing and refund queries` |
+| Research | `/create-agent crewai a research crew that searches academic papers and synthesises findings` |
+
+If you already know the framework and want to start from a well-known pattern, you can pass just the framework name and Claude Code will prompt you for the domain description:
+
+```
+/create-agent agno
+/create-agent crewai
+/create-agent langgraph
+/create-agent google-adk
 ```
 
 ### Skill 2 — Improve an Existing Agent
@@ -126,15 +150,39 @@ Supported shorthand:
 /improve-agent agno agents/my-bot/agent.py
 ```
 
-Or just `/improve-agent`. Claude Code reads your agent's `INSTRUCTIONS`, derives 10 test probes, runs them against the live agent, judges PASS/FAIL, applies targeted fixes, and iterates until all probes pass.
+Or just `/improve-agent`. Claude Code reads your agent's `INSTRUCTIONS`, derives 10 test probes across golden-path, edge-case, tool-selection, constraint, and adversarial categories, runs them against the live agent, judges PASS/FAIL, and applies targeted fixes — iterating until all 10 probes pass.
+
+```
+/improve-agent crewai src/research-crew
+/improve-agent langgraph src/my-agent
+/improve-agent google-adk my_agent
+```
 
 ### Skill 3 — Extend an Agent
 
+Describe the new capability in plain English — no preset categories required:
+
 ```
-/extend-agent langgraph src/my-agent
+/extend-agent agno agents/travel-assistant/agent.py
+→ "Add a human approval step before any booking is confirmed"
 ```
 
-Or just `/extend-agent`. Claude Code asks what capability you want to add, searches framework documentation, writes the plan (with your confirmation), implements it, and validates against 2+ new probes plus a regression check.
+```
+/extend-agent crewai src/research-crew
+→ "Add a fact-checker agent that verifies every claim before the report is published"
+```
+
+```
+/extend-agent langgraph src/devops-agent
+→ "Add a Slack notification tool so the agent posts a summary after every pipeline fix"
+```
+
+```
+/extend-agent google-adk my_agent
+→ "Return structured JSON output instead of plain text so our frontend can parse it"
+```
+
+Or just `/extend-agent` — Claude Code asks which agent to extend and what capability to add.
 
 ---
 
