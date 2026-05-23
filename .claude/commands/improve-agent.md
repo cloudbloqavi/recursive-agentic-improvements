@@ -75,7 +75,7 @@ For the chosen framework, attempt to call the MCP tool below. If available, use 
 | Agno | `search_agno` or `query_docs_filesystem_agno` |
 | LangGraph | `search_docs_by_lang_chain` or `query_docs_filesystem_docs_by_lang_chain` |
 | Google ADK | WebFetch `https://google.github.io/adk-docs/llms.txt` |
-| CrewAI | WebFetch `https://docs.crewai.com/llms.txt` |
+| CrewAI | `search_crewai` MCP tool, then WebFetch `https://docs.crewai.com/llms.txt` |
 
 **If the Agno MCP tool is not available**, output:
 ```
@@ -95,12 +95,31 @@ For the chosen framework, attempt to call the MCP tool below. If available, use 
 ```
 ⚠ LangChain/LangGraph docs MCP not detected.
   Fix suggestions may use outdated LangGraph/LangSmith APIs.
-  To enable: see https://docs.smith.langchain.com/how_to_guides/mcp
-  Add the server to .claude/settings.json, then restart Claude Code.
-  Continuing without live docs.
+  To enable: add to .claude/settings.json under "mcpServers":
+
+    "langchain-docs": {
+      "type": "http",
+      "url": "https://docs.langchain.com/mcp"
+    }
+
+  Then restart Claude Code. Continuing without live docs.
 ```
 
-For Google ADK and CrewAI: if WebFetch is unavailable, note that fix suggestions will be based on training data only.
+**If the CrewAI MCP tool is not available**, output:
+```
+⚠ CrewAI docs MCP not detected.
+  Fix suggestions may use outdated CrewAI APIs.
+  To enable: add to .claude/settings.json under "mcpServers":
+
+    "crewai-docs": {
+      "type": "http",
+      "url": "https://docs.crewai.com/mcp"
+    }
+
+  Then restart Claude Code. Falling back to WebFetch docs.
+```
+
+For Google ADK: if WebFetch is unavailable, note that fix suggestions will be based on training data only.
 
 ---
 

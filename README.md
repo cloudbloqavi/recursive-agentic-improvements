@@ -182,9 +182,9 @@ Each skill **automatically checks** whether the relevant MCP server is available
 | Framework | How docs are fetched | Blocking if missing? |
 |---|---|---|
 | Agno | MCP server at `https://docs.agno.com/mcp` | Warn + continue (`/create-agent`, `/improve-agent`); ask user (`/extend-agent`) |
-| LangGraph | MCP server — see [LangSmith MCP docs](https://docs.smith.langchain.com/how_to_guides/mcp) | Warn + continue (`/create-agent`, `/improve-agent`); ask user (`/extend-agent`) |
+| LangGraph | MCP server at `https://docs.langchain.com/mcp`, fallback WebFetch `https://langchain-ai.github.io/langgraph/llms.txt` | Warn + continue (`/create-agent`, `/improve-agent`); ask user (`/extend-agent`) |
+| CrewAI | MCP server at `https://docs.crewai.com/mcp`, fallback WebFetch `https://docs.crewai.com/llms.txt` | Warn + continue (`/create-agent`, `/improve-agent`); ask user (`/extend-agent`) |
 | Google ADK | WebFetch `https://google.github.io/adk-docs/llms.txt` | Warn + continue |
-| CrewAI | WebFetch `https://docs.crewai.com/llms.txt` | Warn + continue |
 
 #### Setting up MCP servers in Claude Code
 
@@ -202,13 +202,25 @@ Add MCP servers to your project's `.claude/settings.json` (or `~/.claude/setting
 }
 ```
 
-**LangGraph / LangSmith:**
+**LangGraph / LangChain:**
 ```json
 {
   "mcpServers": {
     "langchain-docs": {
       "type": "http",
-      "url": "<url from https://docs.smith.langchain.com/how_to_guides/mcp>"
+      "url": "https://docs.langchain.com/mcp"
+    }
+  }
+}
+```
+
+**CrewAI:**
+```json
+{
+  "mcpServers": {
+    "crewai-docs": {
+      "type": "http",
+      "url": "https://docs.crewai.com/mcp"
     }
   }
 }
@@ -216,7 +228,7 @@ Add MCP servers to your project's `.claude/settings.json` (or `~/.claude/setting
 
 After adding MCP servers, restart Claude Code for them to take effect.
 
-Google ADK and CrewAI do not have dedicated MCP servers — the skills fetch their docs via `WebFetch` automatically.
+Google ADK does not have a dedicated MCP server — the skills fetch its docs via `WebFetch https://google.github.io/adk-docs/llms.txt` automatically.
 
 ---
 
