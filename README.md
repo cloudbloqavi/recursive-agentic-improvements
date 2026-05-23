@@ -138,13 +138,42 @@ Or just `/extend-agent`. Claude Code asks what capability you want to add, searc
 
 ---
 
-## What Makes This Work
+## How the Skills Work
 
-Three platform requirements must be in place for the recursive improvement loop to function:
+Every skill follows a **Research → Plan → Scaffold** pipeline. This is what makes them work for any domain — not just the 8 presets from earlier versions.
 
-1. **API-accessible platform** — the agent container must be reachable via `curl` or SDK so Claude Code can push inputs and read outputs.
-2. **Structured logging** — Claude Code needs system logs, errors, and warnings, not just trace data. It is improving the *system*, not just the prompt.
-3. **Framework docs as MCP** — Claude Code can search and query framework documentation in real time, enabling it to suggest correct APIs and patterns.
+### The three-phase pipeline
+
+```
+PHASE 1 — RESEARCH
+  Query MCP / WebFetch / WebSearch to discover:
+  → Native tools that exist for the agent's domain
+  → Correct API signatures and import paths
+  → Gaps where custom tools are needed
+  → External services and API keys required
+  Output: Research Report shown to the developer
+
+PHASE 2 — PLAN
+  Generate a domain-specific Agent Blueprint:
+  → INSTRUCTIONS outline tailored to the domain
+  → Tools list with verified import paths from research
+  → Project structure
+  Developer confirms the plan before any code is written
+
+PHASE 3 — SCAFFOLD / IMPLEMENT
+  Create files using the framework's structural pattern
+  Fill all content from the Blueprint (not from hardcoded templates)
+  Run smoke tests derived from the domain
+  Commit
+```
+
+This means `/create-agent agno` works equally well for a travel assistant, a legal document analyser, a medical scheduler, or a DevOps automation agent. The research phase discovers what tools and APIs actually exist for that domain before a single line of code is written.
+
+Three platform requirements must also be in place for the recursive improvement loop to function:
+
+1. **API-accessible platform** — the agent must be reachable via Python SDK or CLI so the skill can push inputs and read outputs.
+2. **Structured logging** — the skill reads raw logs, errors, and tool calls — not just the final response. It is improving the *system*, not just the prompt.
+3. **Framework docs via MCP** — the skills query live documentation so generated API patterns match the installed framework version (see [Recommended MCP Servers](#recommended-mcp-servers)).
 
 ### Recommended MCP Servers
 
@@ -244,10 +273,12 @@ A GitHub Actions workflow (coming soon) will:
 
 ## Design Principles
 
+- **Research before code.** Every skill queries live framework docs (MCP / WebFetch / WebSearch) to discover what tools and APIs actually exist before writing a single line. No hardcoded use-case templates.
+- **Show the plan, get confirmation.** Each skill outputs a Research Report and an Agent Blueprint for the developer to review before any files are created or modified.
 - **The agent IS the spec.** Improvement probes are derived from the agent's own `INSTRUCTIONS`, not a separate test suite.
-- **Logs over traces.** Claude Code improves the system by reading raw logs, errors, and warnings — not just pretty trace visualisations.
-- **Hot reload.** After each fix, the agent is reloaded and the failing probes are re-run immediately — no manual restart.
-- **Start simple, add complexity.** Every `create-new-agent.md` begins with the minimal viable agent (model + instructions + one tool) and layers in features only when needed.
+- **Research-driven fixes.** When a probe fails due to an API or tool problem, `/improve-agent` searches current docs for the correct fix instead of guessing from training data.
+- **Logs over traces.** The skills improve the system by reading raw logs, errors, and tool calls — not just pretty trace visualisations.
+- **Any domain, any use case.** The pipeline works for travel agents, legal assistants, DevOps pipelines, medical schedulers, or anything else — the research phase handles domain discovery dynamically.
 
 ---
 

@@ -1,11 +1,12 @@
-# /extend-agent — Add a New Capability to an Existing Agent
+# /extend-agent — Research, Plan, and Add a New Capability
 
-Add a new tool, behaviour, mode, or integration to an existing agent without breaking what already works.
+Add any new capability to an existing agent without breaking what already works.
+The skill researches what tools and patterns actually exist for the capability before writing code.
 
 **Usage:** `/extend-agent [framework] [agent-path]`
 **Examples:**
-- `/extend-agent agno agents/my-bot/agent.py`
-- `/extend-agent crewai src/my-crew`
+- `/extend-agent agno agents/travel-assistant/agent.py`
+- `/extend-agent crewai src/research-crew`
 - `/extend-agent langgraph src/my-agent`
 - `/extend-agent google-adk my_agent`
 - `/extend-agent` (will ask)
@@ -14,540 +15,375 @@ Add a new tool, behaviour, mode, or integration to an existing agent without bre
 
 ## Step 1 — Clarify the Extension
 
-If `$ARGUMENTS` is provided, parse framework and agent path. Ask the user all remaining questions at once:
+If `$ARGUMENTS` is provided, parse framework and agent path. Ask all remaining questions at once:
 
 1. **Which agent are you extending?** File path and framework.
-2. **What new capability do you want to add?** Examples:
-   - A new tool (web search, email, database query, API call, code execution)
-   - Structured output (return a Pydantic model / typed dict instead of plain text)
-   - Memory upgrade (enable long-term user memory)
-   - Multi-modal input (accept images, audio)
-   - MCP server integration
-   - Human-in-the-loop confirmation for sensitive actions
-   - A new agent/role added to an existing crew
-   - A new specialist node added to a LangGraph multi-agent graph
+2. **What new capability do you want to add?** Describe freely — no need to match a preset category. Examples:
+   - "Add flight search so the travel agent can find real-time prices"
+   - "Add a human approval step before any booking is confirmed"
+   - "Add a fact-checker agent to the research crew"
+   - "Return structured JSON output instead of plain text"
+   - "Connect to our internal CRM via MCP"
+   - "Add memory so the agent remembers user preferences across sessions"
 3. **Why is this needed?** What user problem does it solve?
-4. **Are there constraints?** Things the new capability must NOT do.
+4. **Are there constraints?** Things the new capability must NOT do (e.g., "never auto-book, always confirm first").
 
 ---
 
-## Step 2 — Understand the Current Agent
+## Step 2 — Read the Current Agent
 
-Before changing anything:
+Before changing anything, read the full current state:
 
-1. Read the full spec (INSTRUCTIONS / INSTRUCTION / SYSTEM_PROMPT / agents.yaml + tasks.yaml).
-2. Read all tool definitions and their docstrings.
-3. Note the current output format and any constraints.
-4. Identify where the new capability fits in the existing flow.
-5. Check what imports and dependencies are already in place.
-
----
-
-## Step 3 — Search Framework Documentation
-
-**Before searching**, check if the recommended MCP server is available for the chosen framework. The extend workflow depends heavily on current API patterns — using training-data knowledge risks broken imports, wrong parameter names, or deprecated patterns.
-
-For the chosen framework, attempt to call the MCP tool below now:
-
-| Framework | MCP tool to try | What it covers |
-|---|---|---|
-| Agno | `search_agno` or `query_docs_filesystem_agno` | All Agno APIs — 120+ tools, memory, structured output, HITL, MCP integration |
-| LangGraph | `search_docs_by_lang_chain` or `query_docs_filesystem_docs_by_lang_chain` | LangGraph nodes, edges, tools, interrupts, sub-graphs |
-| Google ADK | WebFetch `https://google.github.io/adk-docs/llms.txt` | Full ADK reference — agent-as-tool, callbacks, sub-agents |
-| CrewAI | WebFetch `https://docs.crewai.com/llms.txt` | Full CrewAI docs — agents, tasks, tools, process types |
-
-**If the Agno MCP tool is not available**, output this warning and stop the doc search step:
-```
-⚠ Agno docs MCP not detected. This is critical for /extend-agent —
-  without live docs, generated tool imports and API patterns will be
-  based on training data and may not match the installed agno version.
-
-  To fix: add to .claude/settings.json under "mcpServers":
-
-    "agno-docs": {
-      "type": "http",
-      "url": "https://docs.agno.com/mcp"
-    }
-
-  Restart Claude Code and re-run /extend-agent.
-
-  Alternatively, continue and manually verify all generated imports
-  against your installed agno version: python -c "import agno; help(agno)"
-```
-Then ask the user: "MCP is not available. Do you want to continue without live docs (generated code may need manual verification), or stop and configure MCP first?"
-
-**If the LangGraph MCP tool is not available**, output:
-```
-⚠ LangChain/LangGraph docs MCP not detected.
-  Generated graph and tool code may use outdated APIs.
-  Setup: https://docs.smith.langchain.com/how_to_guides/mcp
-  Add to .claude/settings.json under "mcpServers", restart Claude Code.
-
-  Alternatively, continue and verify all generated code against:
-  https://langchain-ai.github.io/langgraph/
-```
-Then ask the user whether to continue or stop.
-
-**If Google ADK or CrewAI WebFetch fails**, output a brief warning noting that doc lookups will use training data, then continue.
-
-**If MCP / WebFetch is available**, use it for every API lookup in the steps below. Do not rely on training-data memory for any specific class name, parameter name, or import path.
-
-Use the available MCP server or Context7 to find the correct API for the new capability. Do not implement from memory — always verify against current docs.
-
-Key documentation sections by framework:
-
-**Agno**
-- Built-in toolkits: `/tools/` — 120+ available (check before writing custom)
-- MCP integration: `/tools/mcp/`
-- Memory options: `/memory/`
-- Structured output: `/input-output/structured-output/`
-- Human-in-the-loop: `/hitl/`
-- Multi-modal: `/multimodal/`
-
-**CrewAI**
-- Built-in tools: `crewai_tools` package
-- Custom tools: `@tool` decorator
-- Adding agents: new entry in `agents.yaml` + new `@agent` method in `crew.py`
-- Adding tasks: new entry in `tasks.yaml` + new `@task` method
-- Process types: `Process.sequential`, `Process.hierarchical`
-
-**LangGraph**
-- Tool pattern: `@tool` decorator from `langchain.tools`
-- Adding nodes: `workflow.add_node()`
-- Custom state fields: extend `TypedDict` in `state.py`
-- Interrupt for human-in-the-loop: `interrupt()` from `langgraph.types`
-- Sub-graphs: compile a new `StateGraph`, use as a node
-
-**Google ADK**
-- Any Python function is a tool — ADK auto-wraps it
-- Sub-agents: create an `LlmAgent` and add it to another agent's `tools`
-- Agent-as-tool pattern for routing
-- `before_model_callback` / `after_tool_callback` for hooks
+1. Read the spec (INSTRUCTIONS / INSTRUCTION / SYSTEM_PROMPT / agents.yaml + tasks.yaml).
+2. Read all existing tool definitions and their docstrings.
+3. Note the current output format and any constraints already in place.
+4. Note what imports and dependencies are already present.
+5. Identify where the new capability fits in the existing flow — does it add to, replace, or wrap something existing?
 
 ---
 
-## Step 4 — Plan the Change
+## Phase 1 — Research: Discover the Right Implementation
 
-Before writing code, write out the plan and show it to the user for confirmation:
+Use the docs source for the chosen framework (MCP tool, WebFetch, or WebSearch) to find the correct API for the new capability. Do not implement from training-data memory — always verify against current docs.
+
+### Docs source check
+
+Try each in order for the chosen framework — use the first that succeeds:
+
+| Framework | Try first | Try second | Fallback |
+|---|---|---|---|
+| Agno | `search_agno` MCP tool | `query_docs_filesystem_agno` MCP tool | `WebFetch https://docs.agno.com/llms-full.txt` |
+| LangGraph | `search_docs_by_lang_chain` MCP tool | `query_docs_filesystem_docs_by_lang_chain` MCP tool | `WebFetch https://langchain-ai.github.io/langgraph/llms.txt` |
+| Google ADK | `WebFetch https://google.github.io/adk-docs/llms.txt` | `WebSearch "google adk [capability]"` | training data only |
+| CrewAI | `WebFetch https://docs.crewai.com/llms.txt` | `WebSearch "crewai [capability]"` | training data only |
+
+**If no docs source is available for Agno or LangGraph**, warn the user:
+```
+⚠ No documentation source available for [framework].
+  /extend-agent relies heavily on current API docs — generated code may use
+  outdated class names, import paths, or parameter signatures.
+
+  To fix: add MCP server to .claude/settings.json:
+    Agno: "agno-docs": { "type": "http", "url": "https://docs.agno.com/mcp" }
+    LangGraph: see https://docs.smith.langchain.com/how_to_guides/mcp
+
+  Continue without live docs (verify all generated imports manually)?
+```
+Wait for user's answer before continuing.
+
+### Research queries
+
+Run targeted searches for the capability the user described. Construct queries from the capability description:
+
+**Query 1 — Does a native implementation exist?**
+Search: `"[capability keyword] [framework]"` — e.g., `"human approval confirmation agno"`, `"structured output pydantic agno"`, `"memory long-term user agno"`
+
+**Query 2 — What is the correct API?**
+Search: `"[class or pattern name] example"` — e.g., `"MCPTools example"`, `"interrupt langgraph human-in-the-loop"`, `"LlmAgent sub-agent tool"` 
+
+**Query 3 — Any required extras?**
+Search: `"[capability] install dependencies"` or `"[capability] api key"` — find if new packages or credentials are needed
+
+### Research Report
+
+After searching, compile:
 
 ```
-EXTENSION PLAN
-==============
-Framework: <framework>
-Agent/crew: <path>
-New capability: <name>
+EXTENSION RESEARCH REPORT
+==========================
+Capability requested: [user's description]
+Docs source used: [MCP / WebFetch / WebSearch / training data]
 
-Files to create:
-  - <list any new files>
+NATIVE IMPLEMENTATION FOUND: Yes / No / Partial
+  [If yes:]
+  Class/function: [name]
+  Import path: [exact import]
+  Parameters: [key parameters]
+  Example usage: [minimal code snippet from docs]
 
-Files to modify:
-  - <agent/tools file>: <specific changes>
-  - <spec/config file>: <specific changes>
+  [If partial — native exists but needs custom work:]
+  Native part: [what the framework provides]
+  Custom part: [what needs to be built]
 
-Spec/instruction additions:
-  "<exact text to add to INSTRUCTIONS / agent.yaml goal / etc.>"
+  [If no — full custom implementation needed:]
+  Approach: [recommended library or API]
+  New dependency: [pip install ...]
+  New API key: [KEY_NAME if needed]
 
-New test probes (at least 2):
-  1. Input: "<input that exercises new capability>"
-     Expected: <tool is called / format matches / behaviour observed>
-  2. Input: "<edge case for new capability>"
-     Expected: <graceful handling>
+IMPACT ON EXISTING AGENT:
+  Files to modify: [list]
+  Files to create: [list]
+  Spec changes needed: [summary of INSTRUCTIONS/config additions]
 ```
-
-**Wait for user confirmation before implementing.**
 
 ---
 
-## Step 5 — Implement
+## Phase 2 — Plan: Extension Blueprint
 
-Follow the framework-specific implementation patterns below.
+Using the Research Report and current agent state, generate a precise Extension Blueprint.
+
+```
+EXTENSION BLUEPRINT
+===================
+Agent: [path]
+Framework: [framework]
+Capability: [name]
+
+FILES TO CREATE:
+  [filename]: [purpose]
+
+FILES TO MODIFY:
+  [filename]: [what changes and why]
+
+SPEC ADDITIONS (exact text to add to INSTRUCTIONS / agent.yaml / system prompt):
+  """
+  ## [New Capability Name]
+  Trigger: Use [tool_name] when [specific condition derived from user's description].
+  Constraint: [any must-not rules the user specified].
+  [Sequencing rule if needed: "Always call X before Y."]
+  """
+
+IMPLEMENTATION STEPS:
+  1. [Concrete step — e.g., "Add AgentMemory import and update_memory_on_run=True"]
+  2. [Next step]
+  ...
+
+NEW TEST PROBES (minimum 2):
+  Probe 1: "[input that triggers the new capability]"
+    Expected: [what a passing response looks like]
+    Criterion: [TOOL_CALLED / CONTAINS / FORMAT_OK]
+  Probe 2: "[edge case for the new capability]"
+    Expected: [graceful handling]
+    Criterion: [NOT_CONTAINS "error" / CONTAINS "confirm"]
+
+REGRESSION PROBES (from existing spec):
+  Probe R1: "[existing golden-path probe that should still pass]"
+  Probe R2: "[existing constraint probe that should still pass]"
+```
+
+**Show the full blueprint to the user and ask: "Does this plan look right? Any changes before I implement?"**
+
+Wait for confirmation before continuing to Phase 3.
 
 ---
 
-### AGNO — Implementing Extensions
+## Phase 3 — Implement
 
-#### Adding a built-in tool
+### Step 3a — Implement using framework-specific patterns
 
+Follow the correct pattern for the chosen framework and capability type:
+
+#### AGNO — Implementation Patterns
+
+**Adding a built-in toolkit tool:**
 ```python
-# Find the toolkit in Agno docs, then:
-from agno.tools.<module> import <ToolkitClass>
+# Verify the exact import path from Research Phase first
+from agno.tools.[module] import [ToolkitClass]
 
-agent = Agent(
-    ...
-    tools=[..., <ToolkitClass>()],
-)
+agent = Agent(..., tools=[..., [ToolkitClass]()])
 ```
 
-Common built-in toolkits: `DuckDuckGoTools`, `YFinanceTools`, `GoogleMapsTools`,
-`EmailTools`, `SlackTools`, `GithubTools`, `CalCalculatorTools`, `PythonTools`.
-
-#### Adding a custom tool
-
+**Adding a custom tool:**
 ```python
 from agno.tools import tool
 
 @tool()
-def my_new_tool(param: str) -> str:
-    """One-line description of what this tool does.
+def [tool_name]([param]: [type]) -> [return_type]:
+    """[Trigger condition — when to call this tool].
 
     Args:
-        param: Description of what this parameter is for.
-
+        [param]: [description].
     Returns:
-        Description of the return value.
+        [description of return value].
     """
-    # implementation
+    # implementation using [library/API from research]
     return result
 ```
+The docstring IS the tool spec — make the trigger condition precise and unambiguous.
 
-The docstring IS the tool spec for the LLM. Make it precise: when to call it, what it does, what it returns.
-
-#### Adding an MCP server tool
-
+**Adding an MCP server tool:**
 ```python
 from agno.tools.mcp import MCPTools
-
-# Streamable HTTP server:
-mcp = MCPTools(transport="streamable-http", url="<mcp_server_url>")
-
-# stdio-based server:
-mcp = MCPTools(command="npx -y @modelcontextprotocol/<server-name>")
+# HTTP-based:
+mcp = MCPTools(transport="streamable-http", url="[mcp_server_url]")
+# stdio-based:
+mcp = MCPTools(command="npx -y @modelcontextprotocol/[server-name]")
 ```
 
-Use `async with mcp` in an `arun()` context.
-
-#### Adding structured output
-
+**Adding structured output:**
 ```python
 from pydantic import BaseModel, Field
 
-class AgentResponse(BaseModel):
-    answer: str = Field(description="The main response text")
-    confidence: float = Field(description="Confidence score 0.0–1.0")
-    sources: list[str] = Field(default=[], description="Tool results cited")
+class [ResponseModel](BaseModel):
+    [field]: [type] = Field(description="[what this field contains]")
+    ...
 
-agent = Agent(..., output_model=AgentResponse)
+agent = Agent(..., output_model=[ResponseModel])
 ```
 
-#### Adding long-term memory
-
+**Adding long-term memory:**
 ```python
-# Automatic memory extraction after each run (low cost):
+# Low-cost — extracts facts after each run:
 agent = Agent(..., update_memory_on_run=True)
 
-# Real-time memory during conversation (8x more expensive):
+# Real-time — updates memory mid-conversation (higher cost):
 agent = Agent(..., enable_agentic_memory=True)
 ```
 
-#### Adding human-in-the-loop
-
+**Adding human-in-the-loop confirmation:**
 ```python
 from agno.tools import tool
 
-@tool(requires_confirmation=True)   # pauses run for user approval
-def send_email(to: str, subject: str, body: str) -> str:
-    """Send an email. Requires user confirmation before executing."""
+@tool(requires_confirmation=True)   # pauses run and asks user to approve
+def [sensitive_action]([params]) -> str:
+    """[Description. Requires user confirmation before executing.]"""
     # implementation
-    return f"Email sent to {to}"
+    return "[confirmation message]"
 ```
 
-#### Update INSTRUCTIONS
+#### CREWAI — Implementation Patterns
 
-Add a dedicated section for the new capability:
-
+**Adding a tool to an existing agent** → update `crew.py` agent method:
 ```python
-INSTRUCTIONS = """
-...existing content...
-
-## <New Capability Name>
-Trigger: Use `<tool_name>` when the user asks about <specific topic>.
-Constraint: Never use `<tool_name>` for <excluded purpose>.
-Output: When using `<tool_name>`, always cite the result source.
-"""
-```
-
----
-
-### CREWAI — Implementing Extensions
-
-#### Adding a new tool to an existing agent
-
-```python
-# crew.py
-from crewai_tools import SerperDevTool, GithubSearchTool
+from crewai_tools import [NewTool]
 
 @agent
-def senior_researcher(self) -> Agent:
-    return Agent(
-        config=self.agents_config["senior_researcher"],
-        tools=[
-            SerperDevTool(),
-            GithubSearchTool(),   # ← new tool
-        ],
-    )
+def [agent_name](self) -> Agent:
+    return Agent(config=..., tools=[..., [NewTool]()])
 ```
+Update the agent's `goal` in `agents.yaml` to describe when to use the new tool.
 
-Update the agent's `goal` in `agents.yaml` to include when to use the new tool.
+**Adding a new agent + task** → add to `agents.yaml` + `tasks.yaml` + add `@agent` and `@task` methods to `crew.py`. Add `context: [upstream_task]` to the new task if it depends on previous output.
 
-#### Adding a new agent and task
+**Changing process type** → edit `Crew(process=Process.[sequential|hierarchical])`. For hierarchical: add a `manager_llm` parameter.
 
-1. Add the new agent to `config/agents.yaml`:
-```yaml
-fact_checker:
-  role: Research Fact Checker
-  goal: >
-    Verify the accuracy of all factual claims in the research brief for {topic}.
-    Flag any claims that cannot be independently confirmed.
-  backstory: >
-    You are a meticulous fact-checker with 10 years of experience in journalism.
-    You verify every claim against at least 2 independent sources.
-  verbose: true
-  allow_delegation: false
-  llm: anthropic/claude-sonnet-4-6
-```
+#### LANGGRAPH — Implementation Patterns
 
-2. Add the new task to `config/tasks.yaml`:
-```yaml
-fact_checking_task:
-  description: >
-    Verify all factual claims in the research brief for {topic}.
-    For each major claim, confirm it with at least 2 independent sources.
-    Mark verified claims as [VERIFIED] and unverifiable ones as [UNVERIFIED].
-  expected_output: >
-    The research brief with all claims annotated [VERIFIED] or [UNVERIFIED],
-    plus a summary of verification results.
-  agent: fact_checker
-  context:
-    - research_task   # receives research output
-```
-
-3. Add the agent and task methods to `crew.py`:
+**Adding a new tool to a ReAct agent:**
 ```python
-@agent
-def fact_checker(self) -> Agent:
-    return Agent(config=self.agents_config["fact_checker"],
-                 tools=[SerperDevTool()], verbose=True)
-
-@task
-def fact_checking_task(self) -> Task:
-    return Task(config=self.tasks_config["fact_checking_task"])
-```
-
-4. Update the Crew's task list order to insert the new task in the right place.
-
----
-
-### LANGGRAPH — Implementing Extensions
-
-#### Adding a new tool to a ReAct agent
-
-```python
-# src/<slug>/tools.py
-
+# tools.py — add new @tool function with precise docstring
 @tool
-def new_capability_tool(param: str) -> str:
-    """What this tool does and when to use it.
-
-    Use this tool when the user asks about <specific condition>.
-    Do NOT use this for <excluded condition>.
-
-    Args:
-        param: Description of the parameter.
-
-    Returns:
-        Description of return value.
+def [new_tool]([param]: str) -> str:
+    """[Trigger condition]. Do NOT use for [exclusion].
+    Args: [param]: [description].
+    Returns: [description].
     """
-    # implementation
-    return result
+    ...
+
+# agent.py — add to tools list
+graph = create_react_agent(model=model, tools=[..., new_tool], ...)
 ```
 
-Then add to the tools list in `agent.py`:
-```python
-from src.<slug>.tools import web_search, new_capability_tool
+**Adding a new specialist node to a supervisor graph:**
+1. Create `agents/[specialist].py` with `create_react_agent` + node wrapper function.
+2. Add node to `graph.py`: `workflow.add_node("[name]", [node_fn])`; add edge back to supervisor.
+3. Update `SUPERVISOR_SYSTEM` routing rules to include the new agent.
 
-graph = create_react_agent(
-    model=model,
-    tools=[web_search, new_capability_tool],   # ← add here
-    state_modifier=SYSTEM_PROMPT,
-    checkpointer=checkpointer,
-)
-```
-
-Update `SYSTEM_PROMPT` to describe the new tool and when to use it.
-
-#### Adding a new specialist node to a supervisor graph
-
-1. Create `src/<slug>/agents/<new_specialist>.py` following the same pattern as existing specialists.
-2. Import and add the node to `graph.py`:
-```python
-from src.<slug>.agents.<new_specialist> import <new_specialist>_node
-
-workflow.add_node("<new_specialist>", <new_specialist>_node)
-workflow.add_edge("<new_specialist>", "supervisor")
-```
-3. Update `SUPERVISOR_SYSTEM` in `supervisor.py` to include the new agent in routing rules.
-
-#### Adding custom state fields
-
-```python
-# src/<slug>/state.py
-class AgentState(TypedDict):
-    messages: Annotated[list, add_messages]
-    new_field: str    # ← add new fields here
-```
-
-#### Adding human-in-the-loop interrupts
-
+**Adding human-in-the-loop interrupt:**
 ```python
 from langgraph.types import interrupt
 
-def confirmation_node(state: dict) -> dict:
-    """Ask human to confirm before proceeding."""
-    decision = interrupt({"question": "Proceed with this action?", "action": state["pending_action"]})
-    return {"human_approved": decision == "yes"}
+def [confirmation_node](state: dict) -> dict:
+    decision = interrupt({"question": "Proceed?", "details": state["pending_action"]})
+    return {"approved": decision == "yes"}
 ```
 
-Add to graph with: `workflow.add_node("confirm", confirmation_node)`.
-
----
-
-### GOOGLE ADK — Implementing Extensions
-
-#### Adding a new tool function
-
+**Adding custom state fields:**
 ```python
-# <agent_slug>/tools/<new_domain>_tools.py
+# state.py — extend TypedDict
+class AgentState(TypedDict):
+    messages: Annotated[list, add_messages]
+    [new_field]: [type]    # add here
+```
 
-def new_tool(param: str) -> dict:
-    """What this tool does.
+#### GOOGLE ADK — Implementation Patterns
 
-    Use this tool when the user asks about <specific condition>.
-
-    Args:
-        param: Description.
-
-    Returns:
-        A dict with keys: ...
+**Adding a new tool function:**
+```python
+# tools/[domain]_tools.py
+def [new_tool]([param]: [type]) -> dict:
+    """[Trigger condition]. 
+    Args: [param]: [description].
+    Returns: dict with keys: [list key names].
     """
     # implementation
-    return {"result": "..."}
+    return {"[key]": result}
 ```
+Return `dict` for structured data, `str` for text. Always handle exceptions — return `{"error": "..."}` instead of raising.
 
-Add to `root_agent` in `agent.py`:
-```python
-from <agent_slug>.tools.<new_domain>_tools import new_tool
-
-root_agent = LlmAgent(
-    ...
-    tools=[..., new_tool],   # ← add here
-)
-```
-
-Update `INSTRUCTION` to describe the new tool and its trigger condition.
-
-#### Adding a sub-agent (agent-as-tool pattern)
-
+**Adding a sub-agent (agent-as-tool):**
 ```python
 from google.adk.agents import LlmAgent
 
-specialist_agent = LlmAgent(
-    name="specialist_agent",
+[specialist] = LlmAgent(
+    name="[specialist_name]",
     model="gemini-2.5-flash",
-    instruction="You are a specialist in <domain>. <task description>.",
-    tools=[specialist_tool_1, specialist_tool_2],
+    instruction="[Specialist's focused instruction]",
+    tools=[specialist_tools...],
 )
 
 root_agent = LlmAgent(
-    name="orchestrator",
-    model="gemini-2.5-flash",
-    instruction="""...(existing instruction)...
-    
-## Sub-Agents
-- `specialist_agent`: Use when the user needs <specialized capability>.
-""",
-    tools=[..., specialist_agent],   # LlmAgent instances can be passed as tools
+    ...,
+    tools=[..., [specialist]],   # LlmAgent instances are valid tools
 )
 ```
+Update `INSTRUCTION` to describe when to delegate to the sub-agent.
 
 ---
 
-## Step 6 — Validate the Extension
+### Step 3b — Update the Spec
 
-### Part A — Regression check
+Add the spec text from the blueprint's "SPEC ADDITIONS" section to the correct location:
 
-Run the full probe suite from `/improve-agent` to confirm no regressions.
+| Framework | Where to add |
+|---|---|
+| Agno | `INSTRUCTIONS` string in `agent.py` |
+| CrewAI | `goal` / `backstory` in `agents.yaml`; `description` / `expected_output` in `tasks.yaml` |
+| LangGraph | `SYSTEM_PROMPT` in `agent.py`; tool docstrings in `tools.py` |
+| Google ADK | `INSTRUCTION` string in `agent.py`; tool docstrings in `tools/` |
 
-If `/improve-agent` has not been run before, run at least these regression checks:
-- One golden-path probe that worked before
-- One constraint probe (must-not rule)
-- One tool-selection probe (existing tool, not the new one)
+Do not disrupt existing spec content — add the new section cleanly without changing existing rules.
 
-### Part B — New capability probes
+---
 
-Run the 2+ new probes from Step 4:
+### Step 3c — Validate
 
-```python
-# Probe for new capability
-response = agent.run("<input that triggers new capability>", stream=False)
-assert response.content is not None
-
-# If tool call required, verify it was called:
-tool_names = [m.tool_name for m in response.messages if hasattr(m, 'tool_name')]
-assert "<new_tool_name>" in tool_names, "New tool was not called"
-
-# Edge case probe
-response = agent.run("<edge case for new capability>", stream=False)
-assert "error" not in response.content.lower(), "Edge case not handled gracefully"
+**Part A — Regression probes** (from blueprint): run both regression probes to confirm nothing broke:
+```bash
+# run with existing framework command, using the regression probe inputs
 ```
 
-For CrewAI: verify the new agent appears in the output and its task output is populated.
-For LangGraph: check LangSmith trace shows the new node was invoked.
-For Google ADK: check debug logs confirm the new tool function was called.
-
-### Part C — Check for regressions in logs
-
-Scan logs for any new warnings, errors, or unexpected behaviour that was not present before.
-
----
-
-## Step 7 — Update Documentation
-
-If the project has a README or agent documentation file, add a note:
-
-```markdown
-### <New Capability Name>
-
-<One-sentence description of what it does and when it's triggered.>
+**Part B — New capability probes** (from blueprint): run both new probes:
+```bash
+# verify Probe 1: new tool is called / new behaviour is visible
+# verify Probe 2: edge case is handled gracefully
 ```
 
+For tool-call verification, check debug logs:
+- **Agno:** `debug_mode=True` shows tool calls in stdout
+- **CrewAI:** `verbose=True` + `output_log_file`
+- **LangGraph:** stream mode or LangSmith trace
+- **Google ADK:** `GOOGLE_ADK_LOG_LEVEL=debug`
+
+If any probe fails, apply the diagnosis process from `/improve-agent` Step 6 — classify as spec / tool / API / config problem, search docs if API-related, apply fix, re-run.
+
 ---
 
-## Step 8 — Commit
+### Step 3d — Commit
 
 ```bash
-# Agno
-git add agents/<slug>/agent.py tools/<new-tool>.py
-git commit -m "feat(<slug>): add <capability-name> via <tool-or-module>"
-
-# CrewAI
-git add src/<crew_slug>/config/ src/<crew_slug>/crew.py
-git commit -m "feat(<crew-slug>): add <new-agent-or-tool> capability"
-
-# LangGraph
-git add src/<slug>/
-git commit -m "feat(<slug>): add <capability-name> tool/node"
-
-# Google ADK
-git add <agent_slug>/
-git commit -m "feat(<agent-slug>): add <capability-name>"
+git add [modified and new files]
+git commit -m "feat(<slug>): add [capability-name]"
 ```
 
 ---
 
 ## Success Criteria
 
-- New capability works correctly on at least 2 new probes.
-- All previously passing probes still pass (no regressions).
-- Spec (INSTRUCTIONS / INSTRUCTION / SYSTEM_PROMPT / agents.yaml) accurately describes the new capability and its trigger condition.
-- No bare exceptions or unhandled errors in debug logs.
-- Changes committed with a descriptive message.
+- Phase 1 Research Report identifies a concrete implementation path (native or custom).
+- Extension Blueprint was reviewed and confirmed by the user before any code was written.
+- Both new capability probes pass.
+- Both regression probes pass (no existing behaviour broken).
+- Spec accurately describes the new capability and its trigger condition.
+- No unhandled exceptions in debug logs.
+- Changes committed.
