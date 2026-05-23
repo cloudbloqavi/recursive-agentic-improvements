@@ -31,24 +31,26 @@ The skills work for **any domain** — not a fixed list of presets. The research
 
 ## Quick Install
 
-Copy the three skill files into your project's `.claude/commands/` directory.
+You can install the three skill files into your project's `.claude/commands/` directory using `npx`.
 
-**macOS / Linux:**
+From inside your target project directory, run:
 ```bash
-# From inside this repo:
-./install.sh /path/to/your-agentic-project
-
-# Or install into the current directory:
-./install.sh
+npx recursive-agentic-improvements
 ```
 
-**Windows (PowerShell):**
-```powershell
-# From inside this repo:
-.\install.ps1 -TargetProject C:\path\to\your-agentic-project
+Or you can install into a specific target project folder:
+```bash
+npx recursive-agentic-improvements /path/to/your-agentic-project
+```
 
-# Or install into the current directory:
-.\install.ps1
+**Local install (from clone):**
+If you have cloned this repository locally, you can run the installer using `npx`:
+```bash
+# Run from the repository root to copy to another directory:
+npx ./installer /path/to/your-agentic-project
+
+# Or run from inside your target project:
+npx /path/to/recursive-agentic-improvements/installer
 ```
 
 **Manual copy:**
@@ -86,8 +88,7 @@ docs/                            # Reference documentation (per-framework guides
     ├── chatbot/
     └── tool-using-agent/
 
-install.sh                       # Bash installer
-install.ps1                      # PowerShell installer
+installer/                        # npx installer package
 ```
 
 ---

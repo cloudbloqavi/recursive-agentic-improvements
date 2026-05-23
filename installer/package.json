@@ -1,0 +1,17 @@
+{
+  "name": "recursive-agentic-improvements",
+  "version": "1.0.0",
+  "description": "Installer for Recursive Agentic Improvement skills",
+  "main": "bin/install.js",
+  "bin": {
+    "recursive-agentic-improvements": "./bin/install.js"
+  },
+  "files": [
+    "bin",
+    "skills"
+  ],
+  "scripts": {
+    "prepare": "node scripts/prepare.js"
+  },
+  "license": "MIT"
+}

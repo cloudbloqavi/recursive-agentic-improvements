@@ -29,7 +29,7 @@ Adapted from the [Karpathy CLAUDE.md](https://github.com/multica-ai/andrej-karpa
 
 1. `.claude/commands/*.md` — The three skills. These ship to users.
 2. `docs/**/*.md` — Per-framework reference guides that inform the skills.
-3. `install.sh` / `install.ps1` — Installers that must stay in sync with `.claude/commands/`.
+3. `installer/` — The npx installer package that must stay in sync with `.claude/commands/`.
 
 **Design goal:** A developer who runs `/create-agent agno` for a legal document summariser and one who runs it for a DevOps pipeline must both get a correct, production-quality scaffold — without the skill knowing about either use case in advance. The research phase does the discovery.
 
@@ -61,8 +61,7 @@ docs/                     ← Reference guides consumed by the skills and humans
     ├── chatbot/
     └── tool-using-agent/
 
-install.sh                ← Bash installer (macOS / Linux)
-install.ps1               ← PowerShell installer (Windows)
+installer/                ← NPX installer package
 README.md                 ← Public-facing documentation
 LICENSE                   ← MIT
 ```
