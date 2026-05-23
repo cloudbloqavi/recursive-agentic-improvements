@@ -102,9 +102,28 @@ install.ps1                      # PowerShell installer
 
 ### Skill 1 — Create a New Agent
 
-These skills are **not limited to preset use cases**. Describe your agent in plain English — the research phase discovers the right tools and APIs for your domain before writing a single line of code.
+There are two ways to invoke `/create-agent`:
 
-Open Claude Code in your project directory and describe what you want:
+#### Option A — Template-based (quick start with a known pattern)
+
+Pass `framework use-case` to start from a well-tested structural template. Claude Code scaffolds the standard project layout for that use case, then runs smoke tests and commits.
+
+```
+/create-agent agno chatbot
+/create-agent agno research-assistant
+/create-agent crewai research-crew
+/create-agent crewai content-pipeline
+/create-agent langgraph react-agent
+/create-agent langgraph multi-agent-supervisor
+/create-agent google-adk chatbot
+/create-agent google-adk tool-using-agent
+```
+
+Use this when your agent maps closely to one of the standard patterns above.
+
+#### Option B — Free-form description (any domain, any use case)
+
+Pass a plain-English description of what the agent should do. The research phase queries live framework docs (via MCP / WebFetch / WebSearch) to discover the right tools, APIs, and architecture for your specific domain — before writing a single line of code.
 
 ```
 /create-agent agno a travel assistant that searches flights, books hotels, and sends confirmation emails
@@ -122,27 +141,18 @@ Open Claude Code in your project directory and describe what you want:
 /create-agent google-adk a medical appointment scheduler that checks doctor availability and sends SMS reminders
 ```
 
-Or just `/create-agent` with no arguments — Claude Code will ask you everything it needs, including which framework to use and a free-form description of what the agent should do.
+Or just `/create-agent` with no arguments — Claude Code will ask for the framework and description interactively.
 
-**You are not limited to these examples.** Any domain works:
+**Any domain works.** The research phase handles discovery dynamically:
 
-| Domain | Example prompt |
+| Domain | Example free-form prompt |
 |---|---|
 | Legal | `/create-agent agno a legal document summariser that extracts clauses and flags risks` |
 | Finance | `/create-agent langgraph a portfolio monitor that tracks holdings and alerts on threshold breaches` |
 | HR | `/create-agent crewai an HR onboarding crew that generates offer letters and sends welcome packs` |
 | IoT / DevOps | `/create-agent google-adk an infrastructure agent that reads Datadog alerts and triggers runbooks` |
-| E-commerce | `/create-agent agno a customer support bot for a SaaS product that handles billing and refund queries` |
+| E-commerce | `/create-agent agno a customer support bot that handles billing and refund queries` |
 | Research | `/create-agent crewai a research crew that searches academic papers and synthesises findings` |
-
-If you already know the framework and want to start from a well-known pattern, you can pass just the framework name and Claude Code will prompt you for the domain description:
-
-```
-/create-agent agno
-/create-agent crewai
-/create-agent langgraph
-/create-agent google-adk
-```
 
 ### Skill 2 — Improve an Existing Agent
 
