@@ -303,7 +303,7 @@ def [custom_tool_name]([params]) -> [return_type]:
 # agents/<slug>/agent.py
 from agno.agent import Agent
 from agno.models.anthropic import Claude
-from agno.db.sqlite import SqliteDb   # include only if memory=True in blueprint
+from agno.storage.agent.sqlite import SqliteAgentStorage   # include only if memory=True in blueprint
 
 # Native tools from blueprint:
 [imports for each native ToolClass found in research]
@@ -313,7 +313,7 @@ from agno.db.sqlite import SqliteDb   # include only if memory=True in blueprint
 
 INSTRUCTIONS = """[Full INSTRUCTIONS from blueprint Phase 2a]"""
 
-[db = SqliteDb(db_file="tmp/<slug>.db")  # only if memory=True]
+[storage = SqliteAgentStorage(table_name="<slug>_sessions", db_file="tmp/<slug>.db")  # only if memory=True]
 
 agent = Agent(
     name="[AgentName from blueprint]",
@@ -322,8 +322,8 @@ agent = Agent(
     tools=[
         [all tools from blueprint — native + custom]
     ],
-    [db=db,]                          # if memory=True
-    [add_history_to_context=True,]    # if memory=True
+    [storage=storage,]                 # if memory=True
+    [add_history_to_messages=True,]   # if memory=True
     [num_history_runs=5,]             # if memory=True
     markdown=True,
     debug_mode=True,                  # set False before commit

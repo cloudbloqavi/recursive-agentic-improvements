@@ -61,6 +61,7 @@ docs/                     ← Reference guides consumed by the skills and humans
     ├── chatbot/
     └── tool-using-agent/
 
+tests/                    ← Showcase agents and tests for all frameworks
 installer/                ← NPX installer package
 README.md                 ← Public-facing documentation
 LICENSE                   ← MIT
@@ -148,7 +149,7 @@ The structural patterns embedded in skills (file names, module structures, requi
 - **Google ADK:** `__init__.py` must contain `from . import agent`; `agent.py` must define `root_agent`
 - **CrewAI:** `crew.py` requires `@CrewBase`, `@agent`, `@task`, `@crew` decorators
 - **LangGraph:** multi-turn memory requires `checkpointer=MemorySaver()`
-- **Agno:** memory requires `SqliteDb` or equivalent + `add_history_to_context=True`
+- **Agno:** memory requires `SqliteAgentStorage` or equivalent + `add_history_to_messages=True`
 
 When a framework releases a breaking change, update the structural pattern before the PR merges.
 
@@ -549,10 +550,10 @@ Update this table whenever a framework is added, removed, or a minimum version c
 
 | Framework | Min version tested | Docs source | MCP URL | Key note |
 |---|---|---|---|---|
-| Agno | 1.0.0 | MCP + llms-full.txt | `https://docs.agno.com/mcp` | Use `Claude(id=...)` for Anthropic models |
-| CrewAI | 0.70.0 | MCP + llms.txt | `https://docs.crewai.com/mcp` | `crewai create crew <slug>` to scaffold |
-| LangGraph | 0.2.0 | MCP + llms.txt | `https://docs.langchain.com/mcp` | Requires `LANGSMITH_API_KEY` for tracing |
-| Google ADK | 0.5.0 | WebFetch llms.txt | No MCP server | `root_agent` must be defined in `agent.py` |
+| Agno | 2.6.9 | MCP + llms-full.txt | `https://docs.agno.com/mcp` | Use `Claude(id=...)` for Anthropic models |
+| CrewAI | 1.14.5 | MCP + llms.txt | `https://docs.crewai.com/mcp` | `crewai create crew <slug>` to scaffold |
+| LangGraph | 1.2.1 | MCP + llms.txt | `https://docs.langchain.com/mcp` | Requires `LANGSMITH_API_KEY` for tracing |
+| Google ADK | 2.0.0 | WebFetch llms.txt | No MCP server | `root_agent` must be defined in `agent.py` |
 
 ---
 

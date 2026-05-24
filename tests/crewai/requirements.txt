@@ -1,0 +1,3 @@
+crewai==1.14.5
+langchain-openai
+pytest

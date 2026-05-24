@@ -89,7 +89,53 @@ docs/                            # Reference documentation (per-framework guides
     └── tool-using-agent/
 
 installer/                        # npx installer package
+tests/                            # Showcase agents and tests for all frameworks
+.env.example                      # Environment variables template
 ```
+
+---
+
+## Showcase Examples & Testing
+
+This repository includes a `tests/` directory containing static, verified reference implementations of minimal agents for each framework. You can use these to test the `/improve-agent` or `/extend-agent` skills in action.
+
+To get the best performance and avoid virtual environment overhead, we recommend installing dependencies directly in your active Python environment. If you encounter version conflicts between frameworks, simply uninstall/install or upgrade/downgrade required packages for that specific test scenario, **OR** use an isolated virtual environment (`venv`) for each framework as a fallback.
+
+### Quick Setup Example (Agno)
+
+**Option 1: Direct Execution (Recommended)**
+1. **Install and configure:**
+   ```bash
+   pip install -r tests/agno/requirements.txt
+   cp .env.example .env
+   ```
+2. **Run tests:**
+   Run the unit tests using `pytest` directly from the repository root:
+   ```bash
+   python -m pytest tests/agno/
+   ```
+
+**Option 2: Isolated Virtual Environment Execution (Fallback)**
+1. **Navigate and set up environment:**
+   ```bash
+   cd tests/agno
+   python -m venv venv
+   # Windows: .\venv\Scripts\activate
+   # macOS/Linux: source venv/bin/activate
+   ```
+2. **Install and configure:**
+   ```bash
+   pip install -r requirements.txt
+   cp ../../.env.example .env
+   ```
+3. **Run tests:**
+   Run the unit tests using the virtual environment's `pytest` directly:
+   ```bash
+   # On Windows: .\venv\Scripts\pytest
+   # On macOS/Linux: ./venv/bin/pytest
+   ```
+
+For detailed instructions on setting up and running tests for all other frameworks, see the [Showcase README](tests/README.md).
 
 ---
 
@@ -326,16 +372,36 @@ Every `create-new-agent.md`, `improve-agent.md`, and `extend-agent.md` must:
 
 ## How to Test
 
-Each workflow guide is self-testing — it includes a smoke-test step that Claude Code runs as part of the workflow. To manually validate a guide:
+To verify and test changes in this repository:
 
-1. Set up a clean project with the target framework installed.
-2. Open Claude Code and run the guide.
-3. Verify the agent starts, responds correctly to the smoke-test probes, and logs are clean.
-4. For `improve-agent.md`, verify the probe loop runs at least one iteration and patches the agent on failure.
+### 1. Showcase Unit Tests
+Verify the syntax and structure of the framework showcases (no LLM calls or API keys required). 
 
-### Automated Validation (CI)
+**Option 1: Direct Execution (Recommended)**
+You can run tests using `pytest` directly from the repository root:
+```bash
+python -m pytest tests/<framework>/
+```
 
-A GitHub Actions workflow (coming soon) will:
+**Option 2: Isolated Virtual Environment Execution (Fallback)**
+You can run tests using the virtual environment's `pytest` executable directly:
+```bash
+# On Windows (PowerShell):
+.\tests\<framework>\venv\Scripts\pytest tests/<framework>/
+
+# On macOS/Linux:
+./tests/<framework>/venv/bin/pytest tests/<framework>/
+```
+
+See the [Showcase README](tests/README.md) for detailed direct and virtual environment setup instructions for each framework.
+
+### 2. Manual Skill Verification
+To validate that the Claude Code commands/skills function correctly inside a project:
+1. Follow the isolated testing setup described in `CLAUDE.md` under "Self-testing a skill in isolation".
+2. Run `/improve-agent` or `/extend-agent` targeting one of the showcase folders inside `tests/` to verify that the recursive improvement loops run correctly.
+
+### 3. Automated Validation (CI)
+A GitHub Actions workflow will:
 - Lint all markdown files for required sections.
 - Validate code snippets for syntax errors.
 - Run a dry-run of the create workflow against a minimal mock agent.

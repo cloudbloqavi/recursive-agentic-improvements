@@ -1,0 +1,14 @@
+research_task:
+  description: >
+    Conduct research on {topic}. Find 3 key facts.
+  expected_output: >
+    A list of 3 key facts with bullet points.
+  agent: researcher
+
+write_task:
+  description: >
+    Review the research on {topic} and write a short summary.
+  expected_output: >
+    A two-paragraph summary of the key findings.
+  agent: writer
+  context: [research_task]
