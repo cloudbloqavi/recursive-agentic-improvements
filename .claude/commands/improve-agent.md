@@ -22,7 +22,7 @@ If `$ARGUMENTS` is provided, parse framework and agent path from it. Otherwise a
 
 ---
 
-## Step 2 — Read the Agent Specification
+## Step 2 — Read the Agent Specification & Test Constitution
 
 Navigate to the correct spec location for the chosen framework:
 
@@ -39,6 +39,10 @@ Read the spec fully and extract:
 3. Every tool name and its stated trigger condition
 4. The expected output format
 5. The unknown/out-of-scope handling rule
+
+**Read Test Constitution & Current Test File:**
+1. Locate and read the Test Constitution at `tests/TEST_CONSTITUTION.md` in the project root.
+2. Locate and read the corresponding test file `tests/test_<slug>.py` (or `tests/test_<crew_slug>.py` / equivalent). Understant the existing mocked unit and behavioral tests.
 
 ---
 
@@ -371,7 +375,7 @@ adk web   # manual validation via UI
 
 ---
 
-## Step 8 — Iterate
+## Step 8 — Iterate & Update Test Suite
 
 Re-run ONLY the probes that previously FAILED.
 
@@ -380,6 +384,14 @@ Re-run ONLY the probes that previously FAILED.
 - If FAIL with the same behaviour → the fix was not applied correctly — check the file was saved
 
 Continue until all 10 probes are green.
+
+**Update Mocked Test Suite:**
+1. Open the corresponding test suite file `tests/test_<slug>.py` (or equivalent).
+2. Update the mocked test cases (happy path, tool routing, constraints) so they are in sync with the agent's new behaviors and instructions.
+3. Run the test suite using pytest to ensure static and mocked behavioral tests pass:
+   ```bash
+   pytest tests/
+   ```
 
 **Improvement velocity tip:** If a probe keeps failing, split it into smaller assertions to isolate exactly which behaviour is wrong.
 
@@ -396,21 +408,23 @@ Once all probes pass:
 
 ## Step 10 — Commit
 
+Stage the modified agent files along with the updated test suite file:
+
 ```bash
 # Agno
-git add agents/<slug>/agent.py
+git add agents/<slug>/agent.py tests/test_<slug>.py
 git commit -m "improve(<slug>): fix tool selection, tighten constraints, 10/10 probes pass"
 
 # CrewAI
-git add src/<crew_slug>/config/
+git add src/<crew_slug>/config/ tests/test_<crew_slug>.py
 git commit -m "improve(<crew-slug>): strengthen analyst constraints, fix citation rules, 10/10 probes pass"
 
 # LangGraph
-git add src/<slug>/
+git add src/<slug>/ tests/test_<slug>.py
 git commit -m "improve(<slug>): fix tool triggers, add injection immunity, 10/10 probes pass"
 
 # Google ADK
-git add <agent_slug>/
+git add <agent_slug>/ tests/test_<agent_slug>.py
 git commit -m "improve(<agent-slug>): tighten constraints, fix tool call rules, 10/10 probes pass"
 ```
 
@@ -423,5 +437,7 @@ Commit message should list which probe categories were fixed.
 - All 10 probes return PASS.
 - No regressions on previously passing probes.
 - Changes are minimal and targeted (no wholesale rewrites).
+- The mocked test suite `tests/test_<slug>.py` is updated and in sync with the agent's behavior.
+- Running `pytest tests/` returns success for all tests.
 - Debug logging disabled in committed files.
 - (LangGraph) New experiment shows improvement in LangSmith.

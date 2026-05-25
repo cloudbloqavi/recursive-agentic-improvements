@@ -76,12 +76,14 @@ Show the plan to the user and get confirmation before implementing.
 3. Update `INSTRUCTIONS` to explain the new capability and its trigger conditions.
 4. Ensure existing INSTRUCTIONS are not disrupted.
 
-### Phase E — Validate
+### Phase E — Validate & Update Test Suite
 
 1. Run the existing probe suite from `improve-agent.md` — confirm no regressions.
 2. Run the 2+ new probes targeting the new capability.
 3. Check logs for unexpected errors or tool call failures.
 4. If any probe fails, apply the fix loop from `improve-agent.md` Phase D.
+5. Update `tests/test_<slug>.py` (conforming to the [Test Constitution](file:///c:/Users/aviji/repo/recursive-agentic-improvements/tests/TEST_CONSTITUTION.md)) by appending mocked test cases for the new capability.
+6. Run `pytest tests/` to confirm that all test cases (both new capability checks and old regression checks) pass.
 
 ### Phase F — Update Documentation
 
@@ -92,7 +94,8 @@ If the project maintains a README or agent documentation file, add a short note 
 ## Step 3 — Commit
 
 ```bash
-git add agents/<slug>.py tools/<new-tool>.py
+# Stage modified agent, tools, and test suite files
+git add agents/<slug>.py tools/<new-tool>.py tests/test_<slug>.py  # adjust to project structure
 git commit -m "feat(<agent-slug>): add <capability-name> capability"
 ```
 
@@ -103,4 +106,6 @@ git commit -m "feat(<agent-slug>): add <capability-name> capability"
 - New capability works correctly on at least 2 new probes.
 - All previously passing probes still pass (no regressions).
 - INSTRUCTIONS accurately describe the new capability.
+- Mocked test suite `tests/test_<slug>.py` is extended with tests for the new capability.
+- Running `pytest tests/` returns success.
 - Changes are committed with a descriptive message.

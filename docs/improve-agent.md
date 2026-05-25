@@ -90,16 +90,19 @@ For each FAIL, choose a lever:
 
 Make one targeted change per failure. Edit the agent file. Hot-reload (see framework-specific guide).
 
-### Phase E — Iterate
+### Phase E — Iterate & Sync Test Cases
 
-Re-run only the probes that previously FAILED. If they now PASS, mark them green. If they FAIL differently, diagnose and re-apply. Continue until all 8–12 probes are green.
+1. Re-run only the probes that previously FAILED. If they now PASS, mark them green. If they FAIL differently, diagnose and re-apply. Continue until all 8–12 probes are green.
+2. Update the corresponding unit/behavioral test file `tests/test_<slug>.py` conforming to the [Test Constitution](file:///c:/Users/aviji/repo/recursive-agentic-improvements/tests/TEST_CONSTITUTION.md) to match the improved agent behavior.
+3. Run `pytest tests/` to confirm that all static and mocked behavioral tests pass.
 
 ---
 
 ## Step 3 — Commit Improvements
 
 ```bash
-git add agents/<slug>.py  # or equivalent
+# Stage both agent files and corresponding test files
+git add agents/<slug>.py tests/test_<slug>.py  # adjust to project structure
 git commit -m "improve(<agent-slug>): tighten rules, fix tool selection, pass all probes"
 ```
 
@@ -110,4 +113,6 @@ git commit -m "improve(<agent-slug>): tighten rules, fix tool selection, pass al
 - All 8–12 probes return PASS.
 - No regressions on previously passing probes.
 - Changes are minimal and targeted (no wholesale rewrites).
+- The mocked test suite `tests/test_<slug>.py` is updated in sync with agent prompt/instruction adjustments.
+- Running `pytest tests/` returns success for all tests.
 - Commit message lists which probe categories were fixed.

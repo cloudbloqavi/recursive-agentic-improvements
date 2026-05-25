@@ -139,6 +139,29 @@ For detailed instructions on setting up and running tests for all other framewor
 
 ---
 
+## The Test Constitution & Automated Test Generation
+
+To ensure that agents across all frameworks are evaluated consistently, this repository follows a standard [Test Constitution](file:///c:/Users/aviji/repo/recursive-agentic-improvements/tests/TEST_CONSTITUTION.md). 
+
+### How It Works:
+1.  **Standard Evaluation Dimensions**: Tests are categorized into:
+    *   **Static/Structural Integrity**: Asserts correct imports, object configurations, registered tools, and settings.
+    *   **Behavioral/Probe-based Integrity**: Asserts agent routing, tool call argument schema, constraint compliance, and adversarial refusal, all using *mocked LLM responses* to remain deterministic and offline-friendly.
+    *   **Performance Indicators**: Evaluates token consumption and execution latency.
+2.  **Automated Test Scaffolding**:
+    The three core slash commands are fully integrated with the Test Constitution:
+    *   `/create-agent`: Automatically writes a matching unit test suite at `tests/test_<agent_slug>.py` based on the agent's blueprint.
+    *   `/improve-agent`: Reads the test suite, executes tests during iteration loops, and updates test cases to remain in sync with prompt modifications.
+    *   `/extend-agent`: Appends new test cases corresponding to new capabilities while verifying existing regression tests continue to pass.
+
+### Execution:
+Simply run standard `pytest` in your project root to execute the mocked agent suites:
+```bash
+pytest tests/
+```
+
+---
+
 ## How to Use
 
 ### Prerequisites

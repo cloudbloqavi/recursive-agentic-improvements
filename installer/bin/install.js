@@ -76,9 +76,44 @@ for (const skill of skills) {
   }
 }
 
+// Copy TEST_CONSTITUTION.md to target project
+const constSrcPath = path.join(sourceDir, 'TEST_CONSTITUTION.md');
+if (fs.existsSync(constSrcPath)) {
+  let testsDirName = 'tests';
+  if (fs.existsSync(path.join(targetProject, 'test')) && !fs.existsSync(path.join(targetProject, 'tests'))) {
+    testsDirName = 'test';
+  }
+  const targetTestsDir = path.join(targetProject, testsDirName);
+  const constDstPath = path.join(targetTestsDir, 'TEST_CONSTITUTION.md');
+
+  if (!fs.existsSync(targetTestsDir)) {
+    try {
+      fs.mkdirSync(targetTestsDir, { recursive: true });
+    } catch (err) {
+      console.warn(`WARNING: Failed to create tests directory ${targetTestsDir}:`, err.message);
+    }
+  }
+
+  if (fs.existsSync(targetTestsDir)) {
+    const isConstUpdate = fs.existsSync(constDstPath);
+    if (isConstUpdate) {
+      console.log(`  [UPDATE] TEST_CONSTITUTION.md`);
+    } else {
+      console.log(`  [NEW]    TEST_CONSTITUTION.md`);
+    }
+    try {
+      fs.copyFileSync(constSrcPath, constDstPath);
+      console.log(`           copied to ${testsDirName}/TEST_CONSTITUTION.md`);
+    } catch (err) {
+      console.error(`ERROR: Failed to copy TEST_CONSTITUTION.md:`, err.message);
+    }
+  }
+}
+
 console.log(`\nInstalled ${installedCount} skill(s) to ${targetDir}\n`);
 console.log(`Usage in Claude Code (inside ${targetProject}):`);
 console.log('  /create-agent agno chatbot');
 console.log('  /improve-agent');
 console.log('  /extend-agent langgraph react-agent\n');
 console.log('Run /create-agent, /improve-agent, or /extend-agent for interactive prompting.\n');
+

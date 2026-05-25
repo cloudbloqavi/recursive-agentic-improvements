@@ -30,7 +30,7 @@ If `$ARGUMENTS` is provided, parse framework and agent path. Ask all remaining q
 
 ---
 
-## Step 2 — Read the Current Agent
+## Step 2 — Read the Current Agent & Test Suite
 
 Before changing anything, read the full current state:
 
@@ -39,6 +39,7 @@ Before changing anything, read the full current state:
 3. Note the current output format and any constraints already in place.
 4. Note what imports and dependencies are already present.
 5. Identify where the new capability fits in the existing flow — does it add to, replace, or wrap something existing?
+6. Locate and read the Test Constitution at `tests/TEST_CONSTITUTION.md` and the existing test file `tests/test_<slug>.py` (or equivalent) to understand current unit/behavioral coverage.
 
 ---
 
@@ -143,6 +144,12 @@ SPEC ADDITIONS (exact text to add to INSTRUCTIONS / agent.yaml / system prompt):
   Constraint: [any must-not rules the user specified].
   [Sequencing rule if needed: "Always call X before Y."]
   """
+
+TEST SUITE MODIFICATIONS (Conforming to tests/TEST_CONSTITUTION.md):
+  File: tests/test_[slug].py
+  Test Cases to Add:
+  - `test_[slug]_[new_capability]_happy_path`: mock model response to assert new capability routing.
+  - `test_[slug]_[new_capability]_edge_case`: mock model response for edge conditions.
 
 IMPLEMENTATION STEPS:
   1. [Concrete step — e.g., "Add AgentMemory import and update_memory_on_run=True"]
@@ -347,7 +354,7 @@ Do not disrupt existing spec content — add the new section cleanly without cha
 
 ---
 
-### Step 3c — Validate
+### Step 3c — Validate & Update Test Suite
 
 **Part A — Regression probes** (from blueprint): run both regression probes to confirm nothing broke:
 ```bash
@@ -368,12 +375,20 @@ For tool-call verification, check debug logs:
 
 If any probe fails, apply the diagnosis process from `/improve-agent` Step 6 — classify as spec / tool / API / config problem, search docs if API-related, apply fix, re-run.
 
+**Update Mocked Test Suite:**
+1. Open `tests/test_<slug>.py` (or equivalent).
+2. Append the new mocked test cases (as planned in the Extension Blueprint) matching the Test Constitution.
+3. Run the complete test suite to ensure that both old tests (regression check) and new tests pass:
+   ```bash
+   pytest tests/
+   ```
+
 ---
 
 ### Step 3d — Commit
 
 ```bash
-git add [modified and new files]
+git add [modified and new files] tests/test_<slug>.py
 git commit -m "feat(<slug>): add [capability-name]"
 ```
 
@@ -386,5 +401,7 @@ git commit -m "feat(<slug>): add [capability-name]"
 - Both new capability probes pass.
 - Both regression probes pass (no existing behaviour broken).
 - Spec accurately describes the new capability and its trigger condition.
+- The mocked test suite `tests/test_<slug>.py` is updated with the new capability tests.
+- Running `pytest tests/` returns success for all tests.
 - No unhandled exceptions in debug logs.
 - Changes committed.

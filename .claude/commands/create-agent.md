@@ -28,6 +28,7 @@ Ask all remaining questions at once — do not ask one by one:
 5. **Memory across sessions?** Yes / No
 6. **Should it work standalone or as part of a multi-agent system?** Standalone / Multi-agent
 7. **Agent name and slug** — human name and kebab-case slug (e.g., `travel-assistant`)
+8. **Generate Test Suite?** Yes / No (Default: Yes, conforming to the Test Constitution at `tests/TEST_CONSTITUTION.md`)
 
 ---
 
@@ -227,7 +228,7 @@ Architecture: [from research]
 Model: [recommended model]
 
 PROJECT STRUCTURE:
-  [directory tree with all files to create]
+  [directory tree with all files to create, including tests/test_<slug>.py]
 
 FILES TO CREATE:
   [filename]: [what goes in it]
@@ -244,6 +245,15 @@ CUSTOM TOOLS TO IMPLEMENT:
   Function: [name](params) → return_type
   Calls: [external API]
   Trigger condition: [when the agent should call it]
+
+TEST SUITE BLUEPRINT (Conforming to tests/TEST_CONSTITUTION.md):
+  File: tests/test_[slug].py
+  Test cases:
+  - `test_[slug]_agent_static`: verify static property assertions & tools list.
+  - `test_[slug]_agent_happy_path`: mock model response for golden path check.
+  - `test_[slug]_agent_tool_routing`: mock model response to assert tool calls.
+  - `test_[slug]_agent_constraint_refusal`: mock refusal for prompt injection or negative constraints.
+  - `test_[slug]_agent_edge_case`: mock large/empty inputs.
 
 SMOKE TEST INPUTS (3 probes):
   Probe 1 (golden path): "[domain-specific input the agent is built for]"
@@ -341,6 +351,29 @@ if __name__ == "__main__":
     agent.print_response(msg, stream=True, user_id="dev-user")
 ```
 
+**Test file (Conforming to tests/TEST_CONSTITUTION.md):**
+```python
+# tests/test_<slug>.py
+import pytest
+from unittest.mock import patch
+from agents.<slug>.agent import agent
+from agno.run.agent import RunOutput
+
+@pytest.mark.static
+def test_[slug]_agent_static():
+    """Verify static structural properties of the Agno agent."""
+    assert agent.name == "[AgentName]"
+    assert len(agent.tools) >= [number of tools]
+
+@pytest.mark.behavioral
+@patch("agno.agent.Agent.run")
+def test_[slug]_agent_happy_path(mock_run):
+    """Verify happy path execution using mocked agent response."""
+    mock_run.return_value = RunOutput(content="[Expected Response content]", run_id="test-run")
+    response = agent.run("[Probe 1 golden path]")
+    assert "[Expected keyword]" in response.content
+```
+
 ---
 
 #### CREWAI — Structural Pattern
@@ -401,6 +434,32 @@ class [CrewClassName]:
 
 **main.py** — inputs dict uses variables referenced in YAML `{placeholders}`.
 
+**Test file (Conforming to tests/TEST_CONSTITUTION.md):**
+```python
+# tests/test_<slug>.py
+import pytest
+from unittest.mock import patch, MagicMock
+from <slug>.crew import [CrewClassName]
+
+@pytest.mark.static
+def test_[slug]_crew_static():
+    """Verify static structural properties of the CrewAI crew."""
+    crew = [CrewClassName]().crew()
+    assert len(crew.agents) >= [number of agents]
+    assert len(crew.tasks) >= [number of tasks]
+
+@pytest.mark.behavioral
+@patch("crewai.crew.Crew.kickoff")
+def test_[slug]_crew_happy_path(mock_kickoff):
+    """Verify happy path kickoff routing using mocked crew outputs."""
+    mock_output = MagicMock()
+    mock_output.raw = "[Expected output summary]"
+    mock_kickoff.return_value = mock_output
+    
+    result = [CrewClassName]().crew().kickoff(inputs={"topic": "[Probe 1 topic]"})
+    assert "[Expected keyword]" in result.raw
+```
+
 ---
 
 #### LANGGRAPH — Structural Pattern
@@ -446,6 +505,60 @@ graph = create_react_agent(model=model, tools=[...], state_modifier=SYSTEM_PROMP
 ```
 
 For Supervisor pattern: create `state.py`, `supervisor.py`, individual agent files, and `graph.py` following the blueprint's architecture section.
+
+**Test file (Conforming to tests/TEST_CONSTITUTION.md):**
+```python
+# tests/test_<slug>.py
+import pytest
+from langgraph.prebuilt import create_react_agent
+from langgraph.checkpoint.memory import MemorySaver
+from langchain_community.chat_models import GenericFakeChatModel
+from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+from src.<slug>.tools import [all custom tools]
+
+@pytest.mark.static
+def test_[slug]_graph_static():
+    """Verify static structural nodes are registered in the graph."""
+    from src.<slug>.agent import graph
+    assert graph is not None
+    assert "agent" in graph.nodes
+
+@pytest.mark.behavioral
+def test_[slug]_graph_happy_path():
+    """Verify happy path graph execution routing using GenericFakeChatModel."""
+    fake_llm = GenericFakeChatModel(
+        messages=[
+            AIMessage(
+                content="",
+                additional_kwargs={
+                    "tool_calls": [
+                        {
+                            "id": "call_1",
+                            "function": {
+                                "name": "[primary_tool_name]",
+                                "arguments": "[mock_args]"
+                            },
+                            "type": "function"
+                        }
+                    ]
+                }
+            ),
+            AIMessage(content="[Expected Response]")
+        ]
+    )
+    
+    test_graph = create_react_agent(
+        model=fake_llm,
+        tools=[[all custom tools]],
+        checkpointer=MemorySaver()
+    )
+    
+    state = test_graph.invoke({"messages": [HumanMessage(content="[Probe 1 Input]")]}, {"configurable": {"thread_id": "test-1"}})
+    messages = state["messages"]
+    
+    assert len([m for m in messages if isinstance(m, ToolMessage)]) >= 1
+    assert "[Expected keyword]" in messages[-1].content
+```
 
 ---
 
@@ -509,6 +622,50 @@ if __name__ == "__main__":
     print(asyncio.run(run_agent(" ".join(sys.argv[1:]) or "Hello")))
 ```
 
+**Test file (Conforming to tests/TEST_CONSTITUTION.md):**
+```python
+# tests/test_<slug>.py
+import pytest
+import asyncio
+from unittest.mock import patch, AsyncMock
+from <slug>.agent import root_agent
+from run import run_agent
+
+@pytest.mark.static
+def test_[slug]_agent_static():
+    """Verify static structural properties of the Google ADK agent."""
+    assert root_agent.name == "<slug>"
+    assert len(root_agent.tools) >= [number of tools]
+
+class MockPart:
+    def __init__(self, text):
+        self.text = text
+
+class MockContent:
+    def __init__(self, text):
+        self.parts = [MockPart(text)]
+
+class MockEvent:
+    def __init__(self, text, is_final=True):
+        self._text = text
+        self._is_final = is_final
+        self.content = MockContent(text)
+
+    def is_final_response(self):
+        return self._is_final
+
+@pytest.mark.behavioral
+@pytest.mark.asyncio
+async def test_[slug]_runner_happy_path():
+    """Verify the ADK runner async loop and final response mapping using mocked events."""
+    async def mock_run_async(*args, **kwargs):
+        yield MockEvent("[Expected response content]", is_final=True)
+
+    with patch("google.adk.runners.Runner.run_async", new=mock_run_async):
+        response = await run_agent("[Probe 1 input]")
+        assert "[Expected keyword]" in response
+```
+
 ---
 
 ### Step 3c — Run Smoke Tests
@@ -539,15 +696,24 @@ If any probe fails, fix the INSTRUCTIONS or tool docstring before committing. Ap
 
 Set `debug_mode=False` (Agno) after all probes pass.
 
+**Run the Mocked Test Suite:**
+Verify that the generated test suite compiles and passes successfully:
+```bash
+pytest tests/
+```
+
 ---
 
 ### Step 3d — Commit
 
 ```bash
-# Stage all new files
-git add agents/<slug>/          # Agno
-git add src/<slug>/ run.py      # LangGraph / Google ADK
-git add src/ output/ logs/      # CrewAI
+# Stage all new files, including the new test suite
+git add agents/<slug>/ tests/test_<slug>.py          # Agno
+git add src/<slug>/ run.py tests/test_<slug>.py      # LangGraph / Google ADK
+git add src/ output/ logs/ tests/test_<slug>.py      # CrewAI
+
+# If tests folder is not tracked, force add:
+git add -f tests/test_<slug>.py
 
 git commit -m "feat: scaffold <slug> agent ([framework]) — [one-line description]"
 ```
@@ -560,5 +726,7 @@ git commit -m "feat: scaffold <slug> agent ([framework]) — [one-line descripti
 - Agent Blueprint was reviewed and confirmed by the user before any code was written.
 - All 3 smoke test probes pass.
 - The primary tool from the blueprint is called during Probe 2.
+- The mocked test suite `tests/test_<slug>.py` is created conforming to the Test Constitution at `tests/TEST_CONSTITUTION.md`.
+- Running `pytest tests/` returns success for all static and behavioral tests.
 - No import errors, missing API keys, or tool failures in logs.
 - Changes committed on a feature branch.

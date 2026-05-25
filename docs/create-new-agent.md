@@ -81,12 +81,15 @@ Read and execute the selected guide from Step 3. Pass the gathered requirements 
 
 ---
 
-## Step 6 — Run Smoke Tests
+## Step 6 — Run Smoke Tests & Mocked Test Suite
 
-After the agent is created, run the smoke tests defined in the framework-specific guide. A passing smoke test means:
+After the agent is created, run the smoke tests defined in the framework-specific guide. In addition, write and run a mocked test suite under `tests/test_<slug>.py` conforming to the [Test Constitution](file:///c:/Users/aviji/repo/recursive-agentic-improvements/tests/TEST_CONSTITUTION.md).
 
+A passing smoke test and test suite means:
 - The agent starts without errors.
 - It responds to at least one golden-path prompt correctly.
+- The mocked test suite `tests/test_<slug>.py` covers static assertions and mocked behavioral happy paths.
+- Running `pytest tests/` returns success for all tests.
 - No import errors, missing API keys, or tool failures appear in the logs.
 
 ---
@@ -94,8 +97,10 @@ After the agent is created, run the smoke tests defined in the framework-specifi
 ## Step 7 — Commit
 
 ```bash
-git add agents/ config/ src/  # adjust to project structure
-git commit -m "feat: scaffold <agent-name> agent"
+# Stage both agent files and test suite files
+git add agents/ config/ src/ tests/test_<slug>.py  # adjust to project structure
+git add -f tests/test_<slug>.py                    # force add if excluded
+git commit -m "feat: scaffold <agent-name> agent and mocked test suite"
 ```
 
 ---
@@ -104,5 +109,7 @@ git commit -m "feat: scaffold <agent-name> agent"
 
 - Agent file(s) exist with valid syntax.
 - Agent responds correctly to the smoke-test prompt.
+- Mocked test suite `tests/test_<slug>.py` is created conforming to the Test Constitution.
+- Running `pytest tests/` passes successfully.
 - No unhandled errors in logs.
 - Changes committed on a feature branch.
