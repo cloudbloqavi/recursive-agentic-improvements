@@ -1,0 +1,13 @@
+{
+  "name": "recursive-agentic-improvements-root",
+  "version": "1.0.0",
+  "description": "Redirection package for executing installer directly from GitHub",
+  "bin": {
+    "recursive-agentic-improvements": "./installer/bin/install.js"
+  },
+  "files": [
+    "installer",
+    "tests"
+  ],
+  "license": "MIT"
+}

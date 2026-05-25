@@ -31,31 +31,34 @@ The skills work for **any domain** — not a fixed list of presets. The research
 
 ## Quick Install
 
-You can install the three skill files into your project's `.claude/commands/` directory using `npx`.
+You can install the three skill files (and `TEST_CONSTITUTION.md`) into your project's directory using `npx`.
 
-From inside your target project directory, run:
+### Option A — Direct from GitHub (Recommended)
+You do not need to clone the repository or publish to NPM. Simply run this from inside your target project directory:
+```bash
+npx github:cloudbloqavi/recursive-agentic-improvements
+```
+Or target a specific project directory:
+```bash
+npx github:cloudbloqavi/recursive-agentic-improvements /path/to/your-agentic-project
+```
+
+### Option B — Registry Installation
+If the package is published to the NPM registry, run:
 ```bash
 npx recursive-agentic-improvements
 ```
 
-Or you can install into a specific target project folder:
+### Option C — Local Installation (from clone)
+If you have cloned this repository locally, you can run the installer using `npx` from the repository root:
 ```bash
-npx recursive-agentic-improvements /path/to/your-agentic-project
-```
-
-**Local install (from clone):**
-If you have cloned this repository locally, you can run the installer using `npx`:
-```bash
-# Run from the repository root to copy to another directory:
 npx ./installer /path/to/your-agentic-project
-
-# Or run from inside your target project:
-npx /path/to/recursive-agentic-improvements/installer
 ```
 
-**Manual copy:**
+### Option D — Manual Copy
 ```bash
 cp .claude/commands/*.md /path/to/your-agentic-project/.claude/commands/
+cp tests/TEST_CONSTITUTION.md /path/to/your-agentic-project/tests/
 ```
 
 After installing, open Claude Code inside your project and use `/create-agent`, `/improve-agent`, or `/extend-agent`.
