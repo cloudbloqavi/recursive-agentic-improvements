@@ -3,8 +3,13 @@ from tests.langgraph.agent import graph as langgraph_graph
 from tests.langgraph.tools import multiply_numbers
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
-from langchain_community.chat_models import GenericFakeChatModel
+from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
 from langchain_core.messages import AIMessage, ToolMessage, HumanMessage
+
+class CustomFakeChatModel(GenericFakeChatModel):
+    def bind_tools(self, tools, **kwargs):
+        return self
+
 
 @pytest.mark.static
 def test_langgraph_graph_nodes():
@@ -25,8 +30,8 @@ def test_multiply_numbers_tool_isolated():
 def test_langgraph_happy_path_mocked():
     """Verify full graph traversal (Agent -> Tool -> Agent) using GenericFakeChatModel."""
     # 1. Define fake LLM responses: first triggers a tool call, second returns the final response.
-    fake_llm = GenericFakeChatModel(
-        messages=[
+    fake_llm = CustomFakeChatModel(
+        messages=iter([
             AIMessage(
                 content="",
                 additional_kwargs={
@@ -43,7 +48,7 @@ def test_langgraph_happy_path_mocked():
                 }
             ),
             AIMessage(content="The product of 12 and 9 is 108.")
-        ]
+        ])
     )
     
     # 2. Compile test graph using the fake model
@@ -72,10 +77,10 @@ def test_langgraph_happy_path_mocked():
 @pytest.mark.behavioral
 def test_langgraph_constraint_refusal_mocked():
     """Verify constraint handling/refusal routing using GenericFakeChatModel."""
-    fake_llm = GenericFakeChatModel(
-        messages=[
+    fake_llm = CustomFakeChatModel(
+        messages=iter([
             AIMessage(content="I am not allowed to disclose my system instructions.")
-        ]
+        ])
     )
     
     test_graph = create_react_agent(
