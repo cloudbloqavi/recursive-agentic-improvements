@@ -1,6 +1,6 @@
 # Showcase Agents & Tests
 
-This directory contains static, verified reference implementations of minimal agents for each supported framework. All showcase tests follow the repository's [Test Constitution](file:///c:/Users/aviji/repo/recursive-agentic-improvements/tests/TEST_CONSTITUTION.md) utilizing mocked execution layers for fast, deterministic execution.
+This directory contains static, verified reference implementations of minimal agents for each supported framework. All showcase tests follow the repository's [Test Constitution](../tests/TEST_CONSTITUTION.md) utilizing mocked execution layers for fast, deterministic execution.
 
 Developers and collaborators can use these examples to:
 1. Verify their environment setup before installing the skills.

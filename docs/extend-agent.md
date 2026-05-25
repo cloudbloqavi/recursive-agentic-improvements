@@ -82,7 +82,7 @@ Show the plan to the user and get confirmation before implementing.
 2. Run the 2+ new probes targeting the new capability.
 3. Check logs for unexpected errors or tool call failures.
 4. If any probe fails, apply the fix loop from `improve-agent.md` Phase D.
-5. Update `tests/test_<slug>.py` (conforming to the [Test Constitution](file:///c:/Users/aviji/repo/recursive-agentic-improvements/tests/TEST_CONSTITUTION.md)) by appending mocked test cases for the new capability.
+5. Update `tests/test_<slug>.py` (conforming to the [Test Constitution](../tests/TEST_CONSTITUTION.md)) by appending mocked test cases for the new capability.
 6. Run `pytest tests/` to confirm that all test cases (both new capability checks and old regression checks) pass.
 
 ### Phase F — Update Documentation

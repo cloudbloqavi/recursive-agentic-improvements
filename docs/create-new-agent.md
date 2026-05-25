@@ -83,7 +83,7 @@ Read and execute the selected guide from Step 3. Pass the gathered requirements 
 
 ## Step 6 — Run Smoke Tests & Mocked Test Suite
 
-After the agent is created, run the smoke tests defined in the framework-specific guide. In addition, write and run a mocked test suite under `tests/test_<slug>.py` conforming to the [Test Constitution](file:///c:/Users/aviji/repo/recursive-agentic-improvements/tests/TEST_CONSTITUTION.md).
+After the agent is created, run the smoke tests defined in the framework-specific guide. In addition, write and run a mocked test suite under `tests/test_<slug>.py` conforming to the [Test Constitution](../tests/TEST_CONSTITUTION.md).
 
 A passing smoke test and test suite means:
 - The agent starts without errors.

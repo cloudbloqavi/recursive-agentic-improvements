@@ -93,7 +93,7 @@ Make one targeted change per failure. Edit the agent file. Hot-reload (see frame
 ### Phase E — Iterate & Sync Test Cases
 
 1. Re-run only the probes that previously FAILED. If they now PASS, mark them green. If they FAIL differently, diagnose and re-apply. Continue until all 8–12 probes are green.
-2. Update the corresponding unit/behavioral test file `tests/test_<slug>.py` conforming to the [Test Constitution](file:///c:/Users/aviji/repo/recursive-agentic-improvements/tests/TEST_CONSTITUTION.md) to match the improved agent behavior.
+2. Update the corresponding unit/behavioral test file `tests/test_<slug>.py` conforming to the [Test Constitution](../tests/TEST_CONSTITUTION.md) to match the improved agent behavior.
 3. Run `pytest tests/` to confirm that all static and mocked behavioral tests pass.
 
 ---
