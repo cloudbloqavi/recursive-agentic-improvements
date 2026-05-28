@@ -493,7 +493,7 @@ chore(install): add --dry-run flag to PowerShell installer
 ### In this repo generally
 
 - **Do not run `git add .`** (see .gitignore trap).
-- **Do not add runtime dependencies** at the repo root (no `pyproject.toml`, `requirements.txt`, `package.json`).
+- **Dependencies management** is centralized in `pyproject.toml` at the root, and packages should be managed via the `uv` toolchain.
 - **Do not generate example agents in this repo.** Generated agents live in other projects.
 - **Do not add a separate CONTRIBUTING.md** that contradicts this file. This CLAUDE.md is the contribution guide.
 - **Do not add CI that requires repository secrets.** Keep CI runnable with public permissions.

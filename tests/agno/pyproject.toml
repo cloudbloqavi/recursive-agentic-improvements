@@ -1,0 +1,14 @@
+[project]
+name = "agno-showcase"
+version = "0.1.0"
+description = "Showcase and testing suite for Agno"
+requires-python = ">=3.11"
+dependencies = [
+    "agno==2.6.9",
+    "openai",
+    "sqlalchemy",
+    "pytest",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["../.."]

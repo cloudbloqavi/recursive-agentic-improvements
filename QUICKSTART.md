@@ -119,15 +119,15 @@ To allow Claude Code to inspect the latest framework documentation live, add the
 This repository contains static reference showcases in the `tests/` directory. Let's play with them to understand how each agentic framework works under the hood.
 
 > [!TIP]
-> Before running any sandbox script, install its dependencies. We recommend installing them directly in your active python environment or setting up a virtual environment.
+> Before running any sandbox script, install its dependencies. We recommend using the `uv` toolchain with `uv sync --extra <framework>` which automatically sets up a virtual environment and installs the requested packages.
 
 ### 📊 Scenario 1 (Agno) — The Calculator Agent
 * **Where it is:** [tests/agno/](tests/agno/)
 * **What it does:** Uses a custom `add_numbers` tool, remembers past calculations, and declines off-topic questions.
 * **Run the Agent:**
   ```bash
-  pip install -r tests/agno/requirements.txt
-  python -m pytest tests/agno/
+  uv sync --extra agno
+  uv run pytest tests/agno/
   ```
 
 ### 👥 Scenario 2 (CrewAI) — Market Research Crew
@@ -135,8 +135,8 @@ This repository contains static reference showcases in the `tests/` directory. L
 * **What it does:** Orchestrates a Senior Research Analyst agent and a Content Writer agent to write articles based on structured inputs.
 * **Run the Agent:**
   ```bash
-  pip install -r tests/crewai/requirements.txt
-  python -m pytest tests/crewai/
+  uv sync --extra crewai
+  uv run pytest tests/crewai/
   ```
 
 ### 🔗 Scenario 3 (LangGraph) — ReAct Agent
@@ -144,8 +144,8 @@ This repository contains static reference showcases in the `tests/` directory. L
 * **What it does:** Builds a stateful ReAct graph that registers a multiplication tool and persists conversation state with memory checkpointers.
 * **Run the Agent:**
   ```bash
-  pip install -r tests/langgraph/requirements.txt
-  python -m pytest tests/langgraph/
+  uv sync --extra langgraph
+  uv run pytest tests/langgraph/
   ```
 
 ### 🌤️ Scenario 4 (Google ADK) — Weather Assistant
@@ -153,8 +153,8 @@ This repository contains static reference showcases in the `tests/` directory. L
 * **What it does:** Demarcates Google ADK structural agent syntax (`root_agent` export) and binds custom tools like `fetch_weather`.
 * **Run the Agent:**
   ```bash
-  pip install -r tests/google_adk/requirements.txt
-  python -m pytest tests/google_adk/
+  uv sync --extra google-adk
+  uv run pytest tests/google_adk/
   ```
 
 ---

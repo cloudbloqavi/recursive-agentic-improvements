@@ -1,0 +1,10 @@
+[project]
+name = "google-adk-showcase"
+version = "0.1.0"
+description = "Showcase and testing suite for Google ADK"
+requires-python = ">=3.11"
+dependencies = [
+    "google-adk==2.0.0",
+    "pytest",
+    "pytest-asyncio",
+]

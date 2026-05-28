@@ -22,96 +22,90 @@ Developers and collaborators can use these examples to:
 
 ## Setup & Run Instructions
 
-To get the best performance and avoid virtual environment overhead, we recommend installing dependencies directly in your active Python environment. If you encounter package version conflicts, you can optionally set up isolated virtual environments.
+To get the best performance and avoid virtual environment overhead, we recommend using the `uv` toolchain. `uv` manages a unified virtual environment via `pyproject.toml` and resolves packages cleanly.
 
 ### Framework Showcase Command Summary
 
 | Framework | Dependencies | Run Agent Command | Run Tests Command |
 |---|---|---|---|
-| **Agno** | `pip install -r tests/agno/requirements.txt` | `python -m tests.agno.agent_test` | `python -m pytest tests/agno/` |
-| **CrewAI** | `pip install -r tests/crewai/requirements.txt` | `python -m tests.crewai.main` | `python -m pytest tests/crewai/` |
-| **LangGraph** | `pip install -r tests/langgraph/requirements.txt` | `python -m tests.langgraph.run` | `python -m pytest tests/langgraph/` |
-| **Google ADK** | `pip install -r tests/google_adk/requirements.txt` | `python -m tests.google_adk.run` | `python -m pytest tests/google_adk/` |
+| **Agno** | `uv sync --extra agno` | `uv run python -m tests.agno.agent_test` | `uv run pytest tests/agno/` |
+| **CrewAI** | `uv sync --extra crewai` | `uv run python -m tests.crewai.main` | `uv run pytest tests/crewai/` |
+| **LangGraph** | `uv sync --extra langgraph` | `uv run python -m tests.langgraph.run` | `uv run pytest tests/langgraph/` |
+| **Google ADK** | `uv sync --extra google-adk` | `uv run python -m tests.google_adk.run` | `uv run pytest tests/google_adk/` |
 
 > [!NOTE]
 > Ensure you copy the environment template (`cp .env.example .env`) and populate the required API keys (e.g. `OPENAI_API_KEY`, `GOOGLE_API_KEY`) before running the agents.
 
 ---
 
-### 1. Direct Execution (Recommended)
+### 1. Direct Execution via `uv` (Recommended)
 
 Run the following commands directly from the repository root:
 
 #### Agno Calculator Agent
 ```bash
-# Install dependencies
-pip install -r tests/agno/requirements.txt
+# Sync dependencies
+uv sync --extra agno
 
 # Run the agent
-python -m tests.agno.agent_test
+uv run python -m tests.agno.agent_test
 
 # Run unit tests
-python -m pytest tests/agno/
+uv run pytest tests/agno/
 ```
 
 #### CrewAI Research & Writing Crew
 ```bash
-# Install dependencies
-pip install -r tests/crewai/requirements.txt
+# Sync dependencies
+uv sync --extra crewai
 
 # Run the agent
-python -m tests.crewai.main
+uv run python -m tests.crewai.main
 
 # Run unit tests
-python -m pytest tests/crewai/
+uv run pytest tests/crewai/
 ```
 
 #### LangGraph Multiplication Agent
 ```bash
-# Install dependencies
-pip install -r tests/langgraph/requirements.txt
+# Sync dependencies
+uv sync --extra langgraph
 
 # Run the agent
-python -m tests.langgraph.run
+uv run python -m tests.langgraph.run
 
 # Run unit tests
-python -m pytest tests/langgraph/
+uv run pytest tests/langgraph/
 ```
 
 #### Google ADK Weather Agent
 ```bash
-# Install dependencies
-pip install -r tests/google_adk/requirements.txt
+# Sync dependencies
+uv sync --extra google-adk
 
 # Run the agent
-python -m tests.google_adk.run
+uv run python -m tests.google_adk.run
 
 # Run unit tests
-python -m pytest tests/google_adk/
+uv run pytest tests/google_adk/
 ```
 
 ---
 
-### 2. Isolated Virtual Environment Execution (Optional Fallback)
+### 2. Unified Workspace Setup
 
-If you run into dependency conflicts between frameworks (e.g. different `opentelemetry-api` version requirements), use an isolated virtual environment (`venv`) for each framework:
+To install all frameworks and dependencies into a single, unified local virtual environment, simply run:
 
 ```bash
-# 1. Create and activate a venv inside the framework directory
-cd tests/<framework>
-python -m venv venv
-# Windows: .\venv\Scripts\activate
-# macOS/Linux: source venv/bin/activate
+uv sync --all-extras
+```
 
-# 2. Install dependencies
-pip install -r requirements.txt
+Once synced, you can execute any agent or test suite directly from the root without activating virtual environments manually:
 
-# 3. Run agent & tests from repository root
-cd ../..
-python -m tests.<framework>.<run_script>
-# Run the unit tests using the virtual environment's pytest executable directly
-# On Windows (PowerShell):
-.\tests\<framework>\venv\Scripts\pytest tests/<framework>/
-# On macOS/Linux:
-./tests/<framework>/venv/bin/pytest tests/<framework>/
+```bash
+# Run all tests in the repository
+uv run pytest
+
+# Run a specific framework's tests
+uv run pytest tests/langgraph/
 ```

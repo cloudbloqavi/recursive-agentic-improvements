@@ -1,4 +1,0 @@
-agno==2.6.9
-openai
-pytest
-sqlalchemy

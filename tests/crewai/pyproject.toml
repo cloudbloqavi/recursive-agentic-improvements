@@ -1,0 +1,10 @@
+[project]
+name = "crewai-showcase"
+version = "0.1.0"
+description = "Showcase and testing suite for CrewAI"
+requires-python = ">=3.11"
+dependencies = [
+    "crewai==1.14.5",
+    "langchain-openai",
+    "pytest",
+]
