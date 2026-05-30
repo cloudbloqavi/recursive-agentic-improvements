@@ -53,7 +53,7 @@ graph TD
 ```mermaid
 graph TD
     A[Start /improve-agent] --> B[Read System Instructions]
-    B --> C[Derive 8-12 Test Probes]
+    B --> C[Derive 10 Test Probes]
     C --> C1[Golden Path Probes]
     C --> C2[Constraint / Adversarial Probes]
     C --> D[Run Probes Against Local Agent]

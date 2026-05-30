@@ -51,15 +51,15 @@ If no framework-specific guide is available, follow this universal loop:
 
 ### Phase B — Derive Probes
 
-Generate 8–12 test probes covering these categories:
+Generate exactly 10 test probes covering these categories:
 
 | Category | Count | Description |
 |---|---|---|
-| Golden path | 2–3 | Inputs the agent is clearly designed for; expect clean, complete responses |
-| Edge cases | 2–3 | Boundary conditions: empty input, very long input, ambiguous phrasing |
-| Tool selection | 1–2 | Inputs that should trigger a specific tool; verify the right tool is called |
-| Constraint | 1–2 | Inputs that test a "must not" rule (e.g., should not make up citations) |
-| Adversarial | 1–2 | Jailbreak attempts, prompt injections, or inputs designed to break the format |
+| Golden path | 3 | Inputs the agent is clearly designed for; expect clean, complete responses |
+| Edge cases | 2 | Boundary conditions: empty input, very long input, ambiguous phrasing, different language |
+| Tool selection | 2 | Inputs that should trigger a specific tool; verify the right tool is called with correct args |
+| Constraint | 2 | Inputs that test a "must not" rule (e.g., should not make up citations) |
+| Adversarial | 1 | Jailbreak attempts, prompt injections, or inputs designed to break the format |
 
 For each probe, record:
 - **Input**: exact text sent to the agent
@@ -92,7 +92,7 @@ Make one targeted change per failure. Edit the agent file. Hot-reload (see frame
 
 ### Phase E — Iterate & Sync Test Cases
 
-1. Re-run only the probes that previously FAILED. If they now PASS, mark them green. If they FAIL differently, diagnose and re-apply. Continue until all 8–12 probes are green.
+1. Re-run only the probes that previously FAILED. If they now PASS, mark them green. If they FAIL differently, diagnose and re-apply. Continue until all 10 probes are green.
 2. Update the corresponding unit/behavioral test file `tests/test_<slug>.py` conforming to the [Test Constitution](../tests/TEST_CONSTITUTION.md) to match the improved agent behavior.
 3. Run `pytest tests/` to confirm that all static and mocked behavioral tests pass.
 
@@ -110,7 +110,7 @@ git commit -m "improve(<agent-slug>): tighten rules, fix tool selection, pass al
 
 ## Success Criteria
 
-- All 8–12 probes return PASS.
+- All 10 probes return PASS.
 - No regressions on previously passing probes.
 - Changes are minimal and targeted (no wholesale rewrites).
 - The mocked test suite `tests/test_<slug>.py` is updated in sync with agent prompt/instruction adjustments.
