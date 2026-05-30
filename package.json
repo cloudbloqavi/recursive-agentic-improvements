@@ -9,5 +9,8 @@
     "installer",
     "tests"
   ],
+  "scripts": {
+    "prepare": "node installer/scripts/prepare.js"
+  },
   "license": "MIT"
 }
