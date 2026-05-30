@@ -26,7 +26,7 @@ const SKILLS = [
     blurb: "Derives behavioral probes straight from the agent's own instructions, then loops until they pass.",
     steps: [
       "Read INSTRUCTIONS and derive 10 probes",
-      "Run golden-path + adversarial probes against the local agent",
+      "Run all 10 probes: golden-path, edge-case, tool-selection, constraint, and adversarial",
       "On failure: analyze logs, pick a prompt lever, rewrite, re-probe",
       "On pass: refresh mocked suite, verify pytest, commit to a branch",
     ],
@@ -288,7 +288,7 @@ function App() {
           <div className="endcap">
             <div>
               <h2>Install it into your agent project</h2>
-              <p>One command. Then run <span className="kbd">/create-agent</span> and let the loop take over.</p>
+              <p>One command. Then run <span className="kbd">/create-agent</span> to scaffold, <span className="kbd">/improve-agent</span> to optimize.</p>
             </div>
             <div className="endcap-cmd">
               <Command text={INSTALL} prompt="$" />

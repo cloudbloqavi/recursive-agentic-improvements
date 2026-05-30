@@ -130,9 +130,9 @@ This repository contains static reference showcases in the `tests/` directory. L
   uv run pytest tests/agno/
   ```
 
-### 👥 Scenario 2 (CrewAI) — Market Research Crew
+### 👥 Scenario 2 (CrewAI) — Research & Writing Crew
 * **Where it is:** [tests/crewai/](tests/crewai/)
-* **What it does:** Orchestrates a Senior Research Analyst agent and a Content Writer agent to write articles based on structured inputs.
+* **What it does:** Orchestrates a Senior Research Analyst agent and a Content Writer agent to research any topic and write a concise summary.
 * **Run the Agent:**
   ```bash
   uv sync --extra crewai
@@ -148,7 +148,7 @@ This repository contains static reference showcases in the `tests/` directory. L
   uv run pytest tests/langgraph/
   ```
 
-### 🌤️ Scenario 4 (Google ADK) — Weather Assistant
+### 🌤️ Scenario 4 (Google ADK) — Weather Agent
 * **Where it is:** [tests/google_adk/](tests/google_adk/)
 * **What it does:** Demarcates Google ADK structural agent syntax (`root_agent` export) and binds custom tools like `fetch_weather`.
 * **Run the Agent:**
