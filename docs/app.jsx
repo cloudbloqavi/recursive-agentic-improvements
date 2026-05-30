@@ -55,8 +55,8 @@ const FRAMEWORKS = [
     docs: ["agno/chatbot", "agno/research-assistant"],
   },
   {
-    key: "crewai", name: "CrewAI", scenario: "Market Research Crew",
-    blurb: "Orchestrates a Senior Research Analyst and a Content Writer agent to draft articles from structured inputs.",
+    key: "crewai", name: "CrewAI", scenario: "Research & Writing Crew",
+    blurb: "Orchestrates a Senior Research Analyst and a Content Writer agent to research any topic and write a concise summary.",
     extra: "crewai",
     docs: ["crewai/content-pipeline", "crewai/research-crew"],
   },
@@ -67,7 +67,7 @@ const FRAMEWORKS = [
     docs: ["langgraph/react-agent", "langgraph/multi-agent-supervisor"],
   },
   {
-    key: "google_adk", name: "Google ADK", scenario: "Weather Assistant",
+    key: "google_adk", name: "Google ADK", scenario: "Weather Agent",
     blurb: "Demonstrates ADK structural syntax (root_agent export) and binds custom tools like fetch_weather.",
     extra: "google-adk",
     docs: ["google-adk/chatbot", "google-adk/tool-using-agent"],
