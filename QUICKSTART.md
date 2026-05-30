@@ -71,13 +71,24 @@ graph TD
 ## ⚡ 5-Minute Installation & Setup
 
 ### Step 1: Install the Skills into Your Project
-Navigate to your python agent project directory and run the installer via `npx`:
+Navigate to your project directory and run the installer via `npx` (Node.js and npm required, no other prerequisites):
 
+**Claude Code** (default):
 ```bash
 npx github:cloudbloqavi/recursive-agentic-improvements
 ```
 
-This command creates a `.claude/commands/` directory containing the three skills (`create-agent.md`, `improve-agent.md`, `extend-agent.md`) and copies `TEST_CONSTITUTION.md` to your `tests/` directory.
+**Other agentic AI environments** — use the `--agent` flag:
+```bash
+npx github:cloudbloqavi/recursive-agentic-improvements --agent cursor       # Cursor → .cursor/rules/
+npx github:cloudbloqavi/recursive-agentic-improvements --agent copilot      # GitHub Copilot → .github/instructions/
+npx github:cloudbloqavi/recursive-agentic-improvements --agent roo          # Roo Code → .roo/rules/
+npx github:cloudbloqavi/recursive-agentic-improvements --agent windsurf     # Windsurf → .windsurf/rules/
+npx github:cloudbloqavi/recursive-agentic-improvements --agent codex        # OpenAI Codex → project root
+npx github:cloudbloqavi/recursive-agentic-improvements --agent antigravity  # Google Antigravity → .agents/rules/
+```
+
+The installer creates the target directory if it doesn't exist, then copies the three skills (`create-agent.md`, `improve-agent.md`, `extend-agent.md`) and `TEST_CONSTITUTION.md` into your `tests/` directory.
 
 ### Step 2: Configure Environment Variables
 Copy the `.env.example` file to `.env` and fill in your API keys:

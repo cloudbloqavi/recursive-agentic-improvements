@@ -42,18 +42,40 @@ These skills are self-contained markdown documents under [.claude/commands/](.cl
 
 ## ⚡ Quick Install
 
-You can install these skills (and the standard testing configurations) directly into your target project directory using `npx`:
+Run this command from inside your target project directory. Node.js and npm must be installed — no other prerequisites needed.
 
 ### Option A — Direct from GitHub (Recommended)
-Run this command from inside your target project directory:
+
+**Claude Code** (default):
 ```bash
 npx github:cloudbloqavi/recursive-agentic-improvements
 ```
+
+**Other agentic AI environments** — pass `--agent <name>`:
+```bash
+npx github:cloudbloqavi/recursive-agentic-improvements --agent cursor
+npx github:cloudbloqavi/recursive-agentic-improvements --agent copilot
+npx github:cloudbloqavi/recursive-agentic-improvements --agent roo
+npx github:cloudbloqavi/recursive-agentic-improvements --agent windsurf
+npx github:cloudbloqavi/recursive-agentic-improvements --agent codex
+npx github:cloudbloqavi/recursive-agentic-improvements --agent antigravity
+```
+
+| Agent flag | Tool | Installs into |
+|---|---|---|
+| *(default)* | Claude Code | `.claude/commands/` |
+| `cursor` | Cursor | `.cursor/rules/` |
+| `copilot` | GitHub Copilot | `.github/instructions/` |
+| `roo` | Roo Code | `.roo/rules/` |
+| `windsurf` | Windsurf | `.windsurf/rules/` |
+| `codex` | OpenAI Codex | `.` (project root) |
+| `antigravity` | Google Antigravity | `.agents/rules/` |
 
 ### Option B — Local Installer
 If you have cloned this repository locally, execute:
 ```bash
 npx ./installer /path/to/your-agentic-project
+npx ./installer /path/to/your-agentic-project --agent cursor
 ```
 
 *For manual copy instructions, please see [QUICKSTART.md](QUICKSTART.md#step-1-install-the-skills-into-your-project).*
