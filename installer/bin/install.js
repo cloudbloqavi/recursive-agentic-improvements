@@ -23,12 +23,13 @@ Options:
   --help, -h    Show this help message
 
 Supported agents:
-  claude      Claude Code  →  .claude/commands/          (default)
-  cursor      Cursor       →  .cursor/rules/
-  copilot     GitHub Copilot → .github/instructions/
-  roo         Roo Code     →  .roo/rules/
-  windsurf    Windsurf     →  .windsurf/rules/
-  codex       OpenAI Codex →  . (project root)
+  claude        Claude Code      →  .claude/commands/       (default)
+  cursor        Cursor           →  .cursor/rules/
+  copilot       GitHub Copilot   →  .github/instructions/
+  roo           Roo Code         →  .roo/rules/
+  windsurf      Windsurf         →  .windsurf/rules/
+  codex         OpenAI Codex     →  . (project root)
+  antigravity   Google Antigravity → .agents/rules/
 
 Examples:
   npx github:cloudbloqavi/recursive-agentic-improvements
@@ -74,6 +75,11 @@ const AGENTS = {
   codex: {
     label: 'OpenAI Codex',
     dir: '.',
+    ext: '.md',
+  },
+  antigravity: {
+    label: 'Google Antigravity',
+    dir: path.join('.agents', 'rules'),
     ext: '.md',
   },
 };
@@ -208,7 +214,8 @@ const usageHints = {
   copilot:  `Instructions added to .github/instructions/.\nGitHub Copilot will pick these up automatically.`,
   roo:      `Rules installed for Roo Code.\nThey apply automatically to this project.`,
   windsurf: `Rules installed for Windsurf.\nThey apply automatically to this project.`,
-  codex:    `Skill files installed at project root.\nReference them in your AGENTS.md or pass them as context to Codex.`,
+  codex:       `Skill files installed at project root.\nReference them in your AGENTS.md or pass them as context to Codex.`,
+  antigravity: `Rules installed for Google Antigravity.\nThey are active in the Agent Manager under .agents/rules/.`,
 };
 
 console.log(usageHints[agentName] + '\n');
