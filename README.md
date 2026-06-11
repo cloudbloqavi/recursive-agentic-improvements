@@ -46,30 +46,33 @@ Run this command from inside your target project directory. Node.js and npm must
 
 ### Option A — Direct from GitHub (Recommended)
 
-**Claude Code** (default):
+Run with no flags for an **interactive multi-select prompt** — pick one or more environments in a single run:
+
 ```bash
 npx github:cloudbloqavi/recursive-agentic-improvements
 ```
 
-**Other agentic AI environments** — pass `--agent <name>`:
+Use arrow keys and Space to toggle environments, `a` to select all, Enter to confirm. Skills are installed to every selected target in one go.
+
+**Or pass `--agent <name>` to skip the prompt** (useful for scripting/CI):
 ```bash
 npx github:cloudbloqavi/recursive-agentic-improvements --agent cursor
 npx github:cloudbloqavi/recursive-agentic-improvements --agent copilot
-npx github:cloudbloqavi/recursive-agentic-improvements --agent roo
-npx github:cloudbloqavi/recursive-agentic-improvements --agent windsurf
-npx github:cloudbloqavi/recursive-agentic-improvements --agent codex
-npx github:cloudbloqavi/recursive-agentic-improvements --agent antigravity
 ```
 
-| Agent flag | Tool | Installs into |
+| Agent value | Tool | Installs into |
 |---|---|---|
-| *(default)* | Claude Code | `.claude/commands/` |
+| *(interactive default)* | Claude Code | `.claude/commands/` |
+| `claude` | Claude Code | `.claude/commands/` |
 | `cursor` | Cursor | `.cursor/rules/` |
 | `copilot` | GitHub Copilot | `.github/instructions/` |
 | `roo` | Roo Code | `.roo/rules/` |
 | `windsurf` | Windsurf | `.windsurf/rules/` |
 | `codex` | OpenAI Codex | `.` (project root) |
 | `antigravity` | Google Antigravity | `.agents/rules/` |
+| `other` | Custom / Other | `.coding/` *(rename after install)* |
+
+> **"Other" option:** If your tool isn't listed, select **Other** in the prompt (or pass `--agent other`). Skills are installed to `.coding/` and you'll be prompted to rename the folder to match your tool's expected directory (e.g. `mv .coding .myagent/rules`).
 
 ### Option B — Local Installer
 If you have cloned this repository locally, execute:
