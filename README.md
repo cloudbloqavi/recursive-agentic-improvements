@@ -40,29 +40,80 @@ These skills are self-contained markdown documents under [.claude/commands/](.cl
 
 ---
 
-## ⚡ Quick Install
+## ⚡ Installation Guide
 
-Run this command from inside your target project directory. Node.js and npm must be installed — no other prerequisites needed.
+### Prerequisites
 
-### Option A — Direct from GitHub (Recommended)
+Before installing, confirm you have the following:
 
-Run with no flags for an **interactive multi-select prompt** — pick one or more environments in a single run:
+| Requirement | Required? | Notes |
+|---|---|---|
+| **Node.js ≥ 18** | Yes | Required to run `npx`. Check: `node --version` |
+| **npm ≥ 9** (or npx) | Yes | Bundled with Node.js. Check: `npm --version` |
+| **Git** | Optional | Only needed if cloning locally (Option B) |
+| **Claude Code CLI** | Optional | Required only if installing for Claude Code. Install: `npm i -g @anthropic-ai/claude-code` |
+| **ANTHROPIC_API_KEY** | Optional | Required at runtime for Claude-backed agents. Not needed for install. |
+| **Target project directory** | Yes | A folder where your agent project lives (or will live). |
+
+---
+
+### Step 1 — Open a terminal inside your target project
+
+Navigate to the directory where you want the skills installed:
+
+```bash
+cd /path/to/your-project
+```
+
+> If the project doesn't exist yet, create it first:
+> ```bash
+> mkdir my-agent-project && cd my-agent-project && git init
+> ```
+
+---
+
+### Step 2 — Run the installer
+
+#### Option A — Direct from GitHub (Recommended)
 
 ```bash
 npx github:cloudbloqavi/recursive-agentic-improvements
 ```
 
-Use arrow keys and Space to toggle environments, `a` to select all, Enter to confirm. Skills are installed to every selected target in one go.
+This launches an **interactive multi-select prompt** in your terminal:
 
-**Or pass `--agent <name>` to skip the prompt** (useful for scripting/CI):
+```
+  ▶ ●  Claude Code            .claude/commands/
+    ○  Cursor                 .cursor/rules/
+    ○  GitHub Copilot         .github/instructions/
+    ○  Roo Code               .roo/rules/
+    ○  Windsurf               .windsurf/rules/
+    ○  OpenAI Codex           . (project root)
+    ○  Google Antigravity     .agents/rules/
+    ○  Other / Custom         .coding/
+
+  [Space] toggle  [↑↓] move  [a] toggle all  [Enter] confirm  [Ctrl+C] cancel
+```
+
+- Use **↑ ↓** to move between options
+- Press **Space** to toggle an environment on/off
+- Press **a** to select or deselect all
+- Press **Enter** to install to all selected targets
+
+Skills are installed to every selected target in one run.
+
+#### Option B — Skip the prompt (scripting / CI)
+
+Pass `--agent <name>` to install directly without interaction:
+
 ```bash
+npx github:cloudbloqavi/recursive-agentic-improvements --agent claude
 npx github:cloudbloqavi/recursive-agentic-improvements --agent cursor
 npx github:cloudbloqavi/recursive-agentic-improvements --agent copilot
 ```
 
-| Agent value | Tool | Installs into |
+| `--agent` value | Tool | Installs into |
 |---|---|---|
-| *(interactive default)* | Claude Code | `.claude/commands/` |
 | `claude` | Claude Code | `.claude/commands/` |
 | `cursor` | Cursor | `.cursor/rules/` |
 | `copilot` | GitHub Copilot | `.github/instructions/` |
@@ -72,16 +123,63 @@ npx github:cloudbloqavi/recursive-agentic-improvements --agent copilot
 | `antigravity` | Google Antigravity | `.agents/rules/` |
 | `other` | Custom / Other | `.coding/` *(rename after install)* |
 
-> **"Other" option:** If your tool isn't listed, select **Other** in the prompt (or pass `--agent other`). Skills are installed to `.coding/` and you'll be prompted to rename the folder to match your tool's expected directory (e.g. `mv .coding .myagent/rules`).
+#### Option C — Local clone
 
-### Option B — Local Installer
-If you have cloned this repository locally, execute:
+If you have cloned this repository locally:
+
 ```bash
-npx ./installer /path/to/your-agentic-project
-npx ./installer /path/to/your-agentic-project --agent cursor
+npx ./installer /path/to/your-project
+npx ./installer /path/to/your-project --agent cursor
 ```
 
-*For manual copy instructions, please see [QUICKSTART.md](QUICKSTART.md#step-1-install-the-skills-into-your-project).*
+---
+
+### Step 3 — (If you selected "Other") Rename the install folder
+
+If you chose **Other / Custom**, skills land in `.coding/`. Rename it to match your tool's expected directory:
+
+```bash
+# Example — replace with your tool's actual folder
+mv .coding .myagent/rules
+```
+
+The installer will print a reminder with this instruction after it finishes.
+
+---
+
+### Step 4 — Verify the installation
+
+Check that the skill files are present in the expected directory:
+
+```bash
+# Claude Code
+ls .claude/commands/
+# → create-agent.md  extend-agent.md  improve-agent.md
+
+# Cursor
+ls .cursor/rules/
+# → create-agent.mdc  extend-agent.mdc  improve-agent.mdc
+
+# GitHub Copilot
+ls .github/instructions/
+```
+
+---
+
+### Step 5 — Use the skills
+
+Open your AI coding tool and run a skill command:
+
+| Tool | How to invoke |
+|---|---|
+| **Claude Code** | `/create-agent agno chatbot` · `/improve-agent` · `/extend-agent` |
+| **Cursor** | Skills auto-load from `.cursor/rules/` — reference them in your prompt |
+| **GitHub Copilot** | Instructions auto-load from `.github/instructions/` |
+| **Roo / Windsurf** | Rules apply automatically to the project |
+| **Codex** | Pass skill files as context or reference them in `AGENTS.md` |
+| **Antigravity** | Rules are active under `.agents/rules/` in the Agent Manager |
+
+*For a full walkthrough, see [QUICKSTART.md](QUICKSTART.md#step-1-install-the-skills-into-your-project).*
 
 ---
 
