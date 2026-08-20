@@ -67,7 +67,7 @@ Each specialist is a compiled sub-graph or a single node:
 from langchain.chat_models import init_chat_model
 from langchain.tools import tool
 from langchain_community.tools import DuckDuckGoSearchRun
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 
 RESEARCHER_PROMPT = """You are a research specialist.
 Your job: gather factual information using web search.
@@ -87,10 +87,10 @@ def web_search(query: str) -> str:
     return search.run(query)
 
 researcher_model = init_chat_model("claude-sonnet-4-6", model_provider="anthropic")
-researcher_agent = create_react_agent(
+researcher_agent = create_agent(
     model=researcher_model,
     tools=[web_search],
-    state_modifier=RESEARCHER_PROMPT,
+    system_prompt=RESEARCHER_PROMPT,
 )
 
 def researcher_node(state: dict) -> dict:

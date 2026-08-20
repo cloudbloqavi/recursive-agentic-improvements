@@ -550,10 +550,10 @@ Update this table whenever a framework is added, removed, or a minimum version c
 
 | Framework | Min version tested | Docs source | MCP URL | Key note |
 |---|---|---|---|---|
-| Agno | 2.6.9 | MCP + llms-full.txt | `https://docs.agno.com/mcp` | Use `Claude(id=...)` for Anthropic models |
-| CrewAI | 1.14.5 | MCP + llms.txt | `https://docs.crewai.com/mcp` | `crewai create crew <slug>` to scaffold |
-| LangGraph | 1.2.1 | MCP + llms.txt | `https://docs.langchain.com/mcp` | Requires `LANGSMITH_API_KEY` for tracing |
-| Google ADK | 2.0.0 | WebFetch llms.txt | No MCP server | `root_agent` must be defined in `agent.py` |
+| Agno | 2.9.0 | MCP + llms-full.txt | `https://docs.agno.com/mcp` | Use `Claude(id=...)` for Anthropic models |
+| CrewAI | 1.15.17 | MCP + llms.txt | `https://docs.crewai.com/mcp` | `crewai create crew <slug>` to scaffold |
+| LangGraph | 1.2.11 | MCP + llms.txt | `https://docs.langchain.com/mcp` | `create_react_agent` moved to `langchain.agents.create_agent` (V1.0+); requires `LANGSMITH_API_KEY` for tracing |
+| Google ADK | 2.7.1 | WebFetch llms.txt | No MCP server | `root_agent` must be defined in `agent.py` |
 
 ---
 

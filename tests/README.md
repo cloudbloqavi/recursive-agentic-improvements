@@ -13,99 +13,90 @@ Developers and collaborators can use these examples to:
 
 | Framework | Verified Version | Showcase Path | Run Command |
 |---|---|---|---|
-| **Agno** | 2.6.9 | `tests/agno/` | `python -m tests.agno.agent_test` |
-| **CrewAI** | 1.14.5 | `tests/crewai/` | `python -m tests.crewai.main` |
-| **LangGraph** | 1.2.1 | `tests/langgraph/` | `python -m tests.langgraph.run` |
-| **Google ADK** | 2.0.0 | `tests/google_adk/` | `python -m tests.google_adk.run` |
+| **Agno** | 2.9.0 | `tests/agno/` | `python -m tests.agno.agent_test` |
+| **CrewAI** | 1.15.17 | `tests/crewai/` | `python -m tests.crewai.main` |
+| **LangGraph** | 1.2.11 | `tests/langgraph/` | `python -m tests.langgraph.run` |
+| **Google ADK** | 2.7.1 | `tests/google_adk/` | `python -m tests.google_adk.run` |
 
 ---
 
 ## Setup & Run Instructions
 
-To get the best performance and avoid virtual environment overhead, we recommend using the `uv` toolchain. `uv` manages a unified virtual environment via `pyproject.toml` and resolves packages cleanly.
+Each framework showcase is an **isolated** `uv` project: its own `pyproject.toml` and `uv.lock` live inside `tests/<framework>/`. This keeps each framework's dependency tree (and any version conflicts between them) fully separate. There is no root-level `pyproject.toml` — always `cd` into the framework's directory first, then run `uv sync` / `uv run pytest` from there. This is identical on macOS, Linux, and Windows; `uv` resolves the platform-specific virtual environment for you.
 
 ### Framework Showcase Command Summary
 
-| Framework | Dependencies | Run Agent Command | Run Tests Command |
-|---|---|---|---|
-| **Agno** | `uv sync --extra agno` | `uv run python -m tests.agno.agent_test` | `uv run pytest tests/agno/` |
-| **CrewAI** | `uv sync --extra crewai` | `uv run python -m tests.crewai.main` | `uv run pytest tests/crewai/` |
-| **LangGraph** | `uv sync --extra langgraph` | `uv run python -m tests.langgraph.run` | `uv run pytest tests/langgraph/` |
-| **Google ADK** | `uv sync --extra google-adk` | `uv run python -m tests.google_adk.run` | `uv run pytest tests/google_adk/` |
+| Framework | Setup + Run Tests | Run Agent Command |
+|---|---|---|
+| **Agno** | `cd tests/agno && uv sync && uv run pytest` | `uv run python -m tests.agno.agent_test` |
+| **CrewAI** | `cd tests/crewai && uv sync && uv run pytest` | `uv run python -m tests.crewai.main` |
+| **LangGraph** | `cd tests/langgraph && uv sync && uv run pytest` | `uv run python -m tests.langgraph.run` |
+| **Google ADK** | `cd tests/google_adk && uv sync && uv run pytest` | `uv run python -m tests.google_adk.run` |
 
 > [!NOTE]
-> Ensure you copy the environment template (`cp .env.example .env`) and populate the required API keys (e.g. `OPENAI_API_KEY`, `GOOGLE_API_KEY`) before running the agents.
+> Ensure you copy the environment template (`cp .env.example .env` on macOS/Linux, `Copy-Item .env.example .env` on Windows PowerShell) and populate the required API keys (e.g. `OPENAI_API_KEY`, `GOOGLE_API_KEY`) before running the agents. Tests themselves are fully mocked (see `TEST_CONSTITUTION.md`) and do not need real API keys.
 
 ---
 
-### 1. Direct Execution via `uv` (Recommended)
+### Direct Execution via `uv` (Recommended)
 
-Run the following commands directly from the repository root:
+Run the following commands from the repository root — each block changes into the framework's own directory:
 
 #### Agno Calculator Agent
 ```bash
-# Sync dependencies
-uv sync --extra agno
-
-# Run the agent
-uv run python -m tests.agno.agent_test
-
-# Run unit tests
-uv run pytest tests/agno/
+cd tests/agno
+uv sync                              # install this framework's own dependencies
+uv run python -m tests.agno.agent_test   # run the agent
+uv run pytest                        # run its unit tests
 ```
 
 #### CrewAI Research & Writing Crew
 ```bash
-# Sync dependencies
-uv sync --extra crewai
-
-# Run the agent
+cd tests/crewai
+uv sync
 uv run python -m tests.crewai.main
-
-# Run unit tests
-uv run pytest tests/crewai/
+uv run pytest
 ```
 
 #### LangGraph Multiplication Agent
 ```bash
-# Sync dependencies
-uv sync --extra langgraph
-
-# Run the agent
+cd tests/langgraph
+uv sync
 uv run python -m tests.langgraph.run
-
-# Run unit tests
-uv run pytest tests/langgraph/
+uv run pytest
 ```
 
 #### Google ADK Weather Agent
 ```bash
-# Sync dependencies
-uv sync --extra google-adk
-
-# Run the agent
+cd tests/google_adk
+uv sync
 uv run python -m tests.google_adk.run
-
-# Run unit tests
-uv run pytest tests/google_adk/
+uv run pytest
 ```
 
 ---
 
-### 2. Unified Workspace Setup
+### Continuous Integration
 
-To install all frameworks and dependencies into a single, unified local virtual environment, simply run:
+Every push and pull request runs all four showcases (non-`live` tests only) across Ubuntu, macOS, and Windows in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) — no repository secrets required, since tests use mocked model calls. See the [Live Landing Page](https://cloudbloqavi.github.io/recursive-agentic-improvements/) or the diagram below for the pipeline shape:
 
-```bash
-uv sync --all-extras
-```
-
-Once synced, you can execute any agent or test suite directly from the root without activating virtual environments manually:
-
-```bash
-# Run all tests in the repository
-uv run pytest
-
-# Run a specific framework's tests
-uv run pytest tests/langgraph/
+```mermaid
+flowchart LR
+    subgraph Trigger
+        A[push / pull_request]
+    end
+    subgraph "Matrix: ubuntu-latest, macos-latest, windows-latest"
+        B1[tests/agno]
+        B2[tests/crewai]
+        B3[tests/langgraph]
+        B4[tests/google_adk]
+    end
+    A --> B1 & B2 & B3 & B4
+    B1 --> C1["uv sync && uv run pytest -m 'not live'"]
+    B2 --> C2["uv sync && uv run pytest -m 'not live'"]
+    B3 --> C3["uv sync && uv run pytest -m 'not live'"]
+    B4 --> C4["uv sync && uv run pytest -m 'not live'"]
+    C1 & C2 & C3 & C4 --> D{All green?}
+    D -->|Yes| E[✅ CI passes]
+    D -->|No| F[❌ Block merge]
 ```

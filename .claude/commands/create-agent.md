@@ -140,7 +140,7 @@ Based on the user's description, determine the right agent architecture:
 
 | If the agent needs | Agno | CrewAI | LangGraph | Google ADK |
 |---|---|---|---|---|
-| Single conversational agent | `Agent` | Single `@agent` + `@task` | `create_react_agent` | `LlmAgent` |
+| Single conversational agent | `Agent` | Single `@agent` + `@task` | `create_agent` (`langchain.agents`) | `LlmAgent` |
 | Multi-step pipeline with roles | `Agent` + `Team` | Multi-`@agent` crew | `StateGraph` with nodes | `LlmAgent` with sub-agents |
 | Supervisor + specialists | `Agent` + `Team(mode="coordinate")` | Hierarchical `Process` | Supervisor + sub-graphs | Orchestrator + sub-agents |
 | Pure tool execution | `Agent` with tools | `@agent` with tools | `ToolNode` in graph | `LlmAgent` with function tools |
@@ -494,15 +494,16 @@ def [tool_name]([params]) -> str:
 ```python
 # ReAct:
 from langchain.chat_models import init_chat_model
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 from langgraph.checkpoint.memory import MemorySaver
 from src.<slug>.tools import [all tools from blueprint]
 
 SYSTEM_PROMPT = """[From blueprint]"""
 model = init_chat_model("claude-sonnet-4-6", model_provider="anthropic")
-graph = create_react_agent(model=model, tools=[...], state_modifier=SYSTEM_PROMPT,
-                           checkpointer=MemorySaver())
+graph = create_agent(model=model, tools=[...], system_prompt=SYSTEM_PROMPT,
+                     checkpointer=MemorySaver())
 ```
+`create_agent` (from `langchain.agents`) is the LangGraph 1.0+ replacement for the deprecated `langgraph.prebuilt.create_react_agent`. Its compiled graph names the model node `"model"` (not `"agent"`) — check `graph.nodes` accordingly in static tests.
 
 For Supervisor pattern: create `state.py`, `supervisor.py`, individual agent files, and `graph.py` following the blueprint's architecture section.
 
@@ -510,7 +511,7 @@ For Supervisor pattern: create `state.py`, `supervisor.py`, individual agent fil
 ```python
 # tests/test_<slug>.py
 import pytest
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_community.chat_models import GenericFakeChatModel
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
@@ -521,7 +522,7 @@ def test_[slug]_graph_static():
     """Verify static structural nodes are registered in the graph."""
     from src.<slug>.agent import graph
     assert graph is not None
-    assert "agent" in graph.nodes
+    assert "model" in graph.nodes
 
 @pytest.mark.behavioral
 def test_[slug]_graph_happy_path():
@@ -547,7 +548,7 @@ def test_[slug]_graph_happy_path():
         ]
     )
     
-    test_graph = create_react_agent(
+    test_graph = create_agent(
         model=fake_llm,
         tools=[[all custom tools]],
         checkpointer=MemorySaver()

@@ -42,7 +42,7 @@ src/
 
 ## Step 3 — Write the System Prompt
 
-LangGraph agents are driven by a system prompt passed to the model. Write it as a `state_modifier` string or function.
+LangGraph agents are driven by a system prompt passed to the model. Write it as a `system_prompt` string (or `SystemMessage`) — for a dynamic, per-request prompt, use middleware instead (see the LangChain `create_agent` middleware docs).
 
 ```python
 SYSTEM_PROMPT = """You are <PERSONA>, an AI assistant specialised in <DOMAIN>.
@@ -126,7 +126,7 @@ def calculator(expression: str) -> str:
 # src/<slug>/agent.py
 from typing import Annotated
 from langchain.chat_models import init_chat_model
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 from langgraph.checkpoint.memory import MemorySaver
 
 from src.<slug>.tools import web_search, calculator  # your tools
@@ -143,10 +143,10 @@ tools = [web_search, calculator]
 checkpointer = MemorySaver()
 
 # Build the ReAct agent graph
-graph = create_react_agent(
+graph = create_agent(
     model=model,
     tools=tools,
-    state_modifier=SYSTEM_PROMPT,
+    system_prompt=SYSTEM_PROMPT,
     checkpointer=checkpointer,
 )
 ```

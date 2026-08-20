@@ -45,10 +45,10 @@ Update `graph` in `agent.py` to include the new tool:
 ```python
 tools = [web_search, calculator, query_database]  # add here
 
-graph = create_react_agent(
+graph = create_agent(
     model=model,
     tools=tools,
-    state_modifier=SYSTEM_PROMPT,
+    system_prompt=SYSTEM_PROMPT,
     checkpointer=checkpointer,
 )
 ```
@@ -62,27 +62,24 @@ Add trigger condition to `SYSTEM_PROMPT`.
 Extend beyond the default messages-only state:
 
 ```python
-from typing import Annotated, TypedDict
-from langgraph.graph.message import add_messages
+from langchain.agents import AgentState
 
-class AgentState(TypedDict):
-    messages: Annotated[list, add_messages]
+class CustomState(AgentState):
     user_id: str                        # custom field
     session_metadata: dict              # custom field
     tool_call_count: int                # track usage
 ```
 
-Rebuild the graph manually (cannot use `create_react_agent` with custom state):
+`create_agent` supports custom state directly via `state_schema` (the custom class must extend `AgentState` from `langchain.agents`, not a plain `TypedDict`) — no manual graph rebuild needed:
 
 ```python
-workflow = StateGraph(AgentState)
-
-def call_model(state: AgentState) -> dict:
-    response = model_with_tools.invoke(state["messages"])
-    return {
-        "messages": [response],
-        "tool_call_count": state.get("tool_call_count", 0) + len(response.tool_calls or []),
-    }
+graph = create_agent(
+    model=model,
+    tools=tools,
+    system_prompt=SYSTEM_PROMPT,
+    state_schema=CustomState,
+    checkpointer=checkpointer,
+)
 ```
 
 ---
@@ -132,10 +129,10 @@ with psycopg.connect(conn_string) as conn:
     checkpointer = PostgresSaver(conn)
     checkpointer.setup()
 
-graph = create_react_agent(
+graph = create_agent(
     model=model,
     tools=tools,
-    state_modifier=SYSTEM_PROMPT,
+    system_prompt=SYSTEM_PROMPT,
     checkpointer=checkpointer,
 )
 ```
@@ -147,12 +144,12 @@ graph = create_react_agent(
 Pause the graph before executing a sensitive tool:
 
 ```python
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 
-graph = create_react_agent(
+graph = create_agent(
     model=model,
     tools=tools,
-    state_modifier=SYSTEM_PROMPT,
+    system_prompt=SYSTEM_PROMPT,
     checkpointer=MemorySaver(),
     interrupt_before=["tools"],  # pause before any tool call
 )

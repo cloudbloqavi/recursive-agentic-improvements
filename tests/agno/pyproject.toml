@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Showcase and testing suite for Agno"
 requires-python = ">=3.11"
 dependencies = [
-    "agno==2.6.9",
+    "agno==2.9.0",
     "openai",
     "sqlalchemy",
     "pytest",
@@ -12,3 +12,8 @@ dependencies = [
 
 [tool.pytest.ini_options]
 pythonpath = ["../.."]
+markers = [
+    "static: For static structure and configuration tests.",
+    "behavioral: For behavioral, routing, and constraint tests using mocks.",
+    "live: For end-to-end tests executing real model calls (disabled in CI).",
+]
