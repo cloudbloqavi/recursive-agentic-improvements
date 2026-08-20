@@ -2,7 +2,7 @@ import pytest
 import time
 from tests.langgraph.agent import graph as langgraph_graph, model as langgraph_model, SYSTEM_PROMPT
 from tests.langgraph.tools import multiply_numbers
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
 from langchain_core.messages import AIMessage, ToolMessage, HumanMessage
@@ -15,7 +15,7 @@ class CustomFakeChatModel(GenericFakeChatModel):
 def test_langgraph_graph_structure():
     """Verify static structural properties of the LangGraph agent."""
     assert langgraph_graph is not None
-    assert "agent" in langgraph_graph.nodes
+    assert "model" in langgraph_graph.nodes
     assert "tools" in langgraph_graph.nodes
     assert "__start__" in langgraph_graph.nodes
     
@@ -99,7 +99,7 @@ def test_langgraph_happy_path_mocked():
     )
     
     # 2. Compile test graph using the fake model
-    test_graph = create_react_agent(
+    test_graph = create_agent(
         model=fake_llm,
         tools=[multiply_numbers],
         checkpointer=MemorySaver()
@@ -150,12 +150,12 @@ def test_langgraph_constraint_refusal_mocked():
         ])
     )
     
-    test_graph = create_react_agent(
+    test_graph = create_agent(
         model=fake_llm,
         tools=[multiply_numbers],
         checkpointer=MemorySaver()
     )
-    
+
     config = {"configurable": {"thread_id": "test-session-refusal"}}
     
     start_time = time.time()
@@ -204,12 +204,12 @@ def test_langgraph_edge_case_mocked():
         ])
     )
     
-    test_graph = create_react_agent(
+    test_graph = create_agent(
         model=fake_llm,
         tools=[multiply_numbers],
         checkpointer=MemorySaver()
     )
-    
+
     config = {"configurable": {"thread_id": "test-session-edge"}}
     state = test_graph.invoke({"messages": [HumanMessage(content="What is 1000000000000000000 * 1000000000000000000?")]}, config)
     

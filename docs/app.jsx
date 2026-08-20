@@ -303,6 +303,8 @@ function App() {
         <span className="dot-sep">·</span>
         <a href={REPO} target="_blank" rel="noopener">GitHub</a>
         <span className="dot-sep">·</span>
+        <a href={`${REPO}/blob/main/tests/README.md#continuous-integration`} target="_blank" rel="noopener">CI Pipeline</a>
+        <span className="dot-sep">·</span>
         <a href={`${REPO}/blob/main/LICENSE`} target="_blank" rel="noopener">MIT License</a>
         <span className="foot-end">built for agent engineers</span>
       </footer>

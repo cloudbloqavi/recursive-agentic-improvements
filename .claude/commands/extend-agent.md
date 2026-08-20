@@ -279,11 +279,11 @@ def [new_tool]([param]: str) -> str:
     ...
 
 # agent.py — add to tools list
-graph = create_react_agent(model=model, tools=[..., new_tool], ...)
+graph = create_agent(model=model, tools=[..., new_tool], ...)  # from langchain.agents
 ```
 
 **Adding a new specialist node to a supervisor graph:**
-1. Create `agents/[specialist].py` with `create_react_agent` + node wrapper function.
+1. Create `agents/[specialist].py` with `create_agent` (from `langchain.agents`) + node wrapper function.
 2. Add node to `graph.py`: `workflow.add_node("[name]", [node_fn])`; add edge back to supervisor.
 3. Update `SUPERVISOR_SYSTEM` routing rules to include the new agent.
 

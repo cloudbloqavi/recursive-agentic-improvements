@@ -5,6 +5,8 @@ from unittest.mock import patch, MagicMock
 
 # Set mock API key before importing crewai components to avoid ValueError
 os.environ["OPENAI_API_KEY"] = "mock-key"
+# Keep the offline test suite hermetic: no telemetry calls to telemetry.crewai.com
+os.environ["CREWAI_DISABLE_TELEMETRY"] = "true"
 
 from tests.crewai.crew import SimpleCrew
 

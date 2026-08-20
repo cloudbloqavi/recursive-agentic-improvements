@@ -1,5 +1,8 @@
 # 🚀 Recursive Agentic Improvements
 
+[![CI](https://github.com/exponen-agi/recursive-agentic-improvements/actions/workflows/ci.yml/badge.svg)](https://github.com/exponen-agi/recursive-agentic-improvements/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 > 🔗 **[Live Landing Page](https://cloudbloqavi.github.io/recursive-agentic-improvements/)**
 >
 > **New to AI Agent engineering?** Get started immediately with our step-by-step **[Quickstart Guide (5-Minute Path)](QUICKSTART.md)**.
@@ -23,6 +26,7 @@ This project is organized to separate the Claude Code skills, reference guides, 
 | **Quickstart Guide** | 5-minute setup, core terminology, and sandbox walkthroughs. | [QUICKSTART.md](QUICKSTART.md) |
 | **Testing Constitution** | Standard for writing offline, mock-based unit tests for agents. | [TEST_CONSTITUTION.md](tests/TEST_CONSTITUTION.md) |
 | **Showcase Guidelines** | Running and testing sandbox agents for each framework. | [Showcase README](tests/README.md) |
+| **CI Pipeline** | How pushes/PRs are tested (matrix, diagram, no-secrets policy). | [Continuous Integration section](tests/README.md#continuous-integration) |
 | **Contributor Guidelines** | Developer instructions and testing protocol. | [CLAUDE.md](CLAUDE.md) |
 | **License** | MIT License terms. | [LICENSE](LICENSE) |
 
