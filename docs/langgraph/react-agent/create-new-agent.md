@@ -127,7 +127,7 @@ def calculator(expression: str) -> str:
 from typing import Annotated
 from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.memory import InMemorySaver
 
 from src.<slug>.tools import web_search, calculator  # your tools
 
@@ -140,7 +140,7 @@ model = init_chat_model("claude-sonnet-4-6", model_provider="anthropic")
 tools = [web_search, calculator]
 
 # Checkpointer (enables multi-turn memory)
-checkpointer = MemorySaver()
+checkpointer = InMemorySaver()
 
 # Build the ReAct agent graph
 graph = create_agent(
@@ -183,7 +183,7 @@ workflow.add_edge(START, "agent")
 workflow.add_conditional_edges("agent", should_continue)
 workflow.add_edge("tools", "agent")
 
-graph = workflow.compile(checkpointer=MemorySaver())
+graph = workflow.compile(checkpointer=InMemorySaver())
 ```
 
 ---

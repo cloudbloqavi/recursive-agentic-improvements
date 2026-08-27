@@ -313,7 +313,7 @@ def [custom_tool_name]([params]) -> [return_type]:
 # agents/<slug>/agent.py
 from agno.agent import Agent
 from agno.models.anthropic import Claude
-from agno.storage.agent.sqlite import SqliteAgentStorage   # include only if memory=True in blueprint
+from agno.db.sqlite import SqliteDb   # include only if memory=True in blueprint
 
 # Native tools from blueprint:
 [imports for each native ToolClass found in research]
@@ -323,7 +323,7 @@ from agno.storage.agent.sqlite import SqliteAgentStorage   # include only if mem
 
 INSTRUCTIONS = """[Full INSTRUCTIONS from blueprint Phase 2a]"""
 
-[storage = SqliteAgentStorage(table_name="<slug>_sessions", db_file="tmp/<slug>.db")  # only if memory=True]
+[db = SqliteDb(session_table="<slug>_sessions", db_file="tmp/<slug>.db")  # only if memory=True]
 
 agent = Agent(
     name="[AgentName from blueprint]",
@@ -332,8 +332,8 @@ agent = Agent(
     tools=[
         [all tools from blueprint — native + custom]
     ],
-    [storage=storage,]                 # if memory=True
-    [add_history_to_messages=True,]   # if memory=True
+    [db=db,]                           # if memory=True
+    [add_history_to_context=True,]    # if memory=True
     [num_history_runs=5,]             # if memory=True
     markdown=True,
     debug_mode=True,                  # set False before commit
@@ -495,13 +495,13 @@ def [tool_name]([params]) -> str:
 # ReAct:
 from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.memory import InMemorySaver
 from src.<slug>.tools import [all tools from blueprint]
 
 SYSTEM_PROMPT = """[From blueprint]"""
 model = init_chat_model("claude-sonnet-4-6", model_provider="anthropic")
 graph = create_agent(model=model, tools=[...], system_prompt=SYSTEM_PROMPT,
-                     checkpointer=MemorySaver())
+                     checkpointer=InMemorySaver())
 ```
 `create_agent` (from `langchain.agents`) is the LangGraph 1.0+ replacement for the deprecated `langgraph.prebuilt.create_react_agent`. Its compiled graph names the model node `"model"` (not `"agent"`) — check `graph.nodes` accordingly in static tests.
 
@@ -512,7 +512,7 @@ For Supervisor pattern: create `state.py`, `supervisor.py`, individual agent fil
 # tests/test_<slug>.py
 import pytest
 from langchain.agents import create_agent
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.memory import InMemorySaver
 from langchain_community.chat_models import GenericFakeChatModel
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from src.<slug>.tools import [all custom tools]
@@ -551,7 +551,7 @@ def test_[slug]_graph_happy_path():
     test_graph = create_agent(
         model=fake_llm,
         tools=[[all custom tools]],
-        checkpointer=MemorySaver()
+        checkpointer=InMemorySaver()
     )
     
     state = test_graph.invoke({"messages": [HumanMessage(content="[Probe 1 Input]")]}, {"configurable": {"thread_id": "test-1"}})

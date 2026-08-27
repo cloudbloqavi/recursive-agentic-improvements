@@ -150,7 +150,7 @@ def supervisor_node(state: dict) -> dict:
 ```python
 # src/<slug>/graph.py
 from langgraph.graph import END, START, StateGraph
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.memory import InMemorySaver
 
 from src.<slug>.state import SupervisorState
 from src.<slug>.supervisor import supervisor_node
@@ -187,7 +187,7 @@ def build_graph():
     # Start at supervisor
     workflow.add_edge(START, "supervisor")
 
-    return workflow.compile(checkpointer=MemorySaver())
+    return workflow.compile(checkpointer=InMemorySaver())
 
 graph = build_graph()
 ```

@@ -41,7 +41,7 @@ Every agent test suite must test the agent against these standard parameters:
 Tests must verify the configuration and declaration of the agent object *before* any LLM calls are executed:
 *   **Properties Assertions:** Validate `name`, `description`, `model_name` (or ID), and framework settings.
 *   **Tool Schema Registry:** Verify that expected tool functions are registered and check the tools' parameter types and docstrings.
-*   **Memory/Checkpointer Bindings:** Ensure checkpointers (e.g. `MemorySaver`, storage DBs) are instantiated correctly.
+*   **Memory/Checkpointer Bindings:** Ensure checkpointers (e.g. `InMemorySaver`, storage DBs) are instantiated correctly.
 
 ### B. Behavioral (Probe-based) Integrity
 Tests must simulate user interactions and verify agent responses. Using mocked LLM responses, we test the agent's deterministic parsing and routing logic:

@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain.agents import create_agent
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.memory import InMemorySaver
 from tests.langgraph.tools import multiply_numbers
 
 load_dotenv()
@@ -14,5 +14,5 @@ graph = create_agent(
     model=model,
     tools=[multiply_numbers],
     system_prompt=SYSTEM_PROMPT,
-    checkpointer=MemorySaver()
+    checkpointer=InMemorySaver()
 )

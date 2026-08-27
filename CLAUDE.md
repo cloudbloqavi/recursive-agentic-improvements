@@ -128,6 +128,21 @@ Every skill that touches framework-specific APIs must implement the full fallbac
 
 Never skip to training data when any of the steps above can be attempted. Never use WebFetch as the first attempt when an MCP tool exists for that framework.
 
+**Why this order matters (plain English):** frameworks change their APIs faster than any model's training data. If a skill answers from memory first, it can confidently generate an import path or decorator that used to be correct and no longer is — exactly the kind of drift that breaks a generated agent silently. Each step below is only tried if the one above it is unavailable or fails:
+
+```mermaid
+flowchart TD
+    A["Step 1: MCP tool\n(e.g. search_agno)"] -->|unavailable or fails| B["Step 2: Filesystem MCP\n(e.g. query_docs_filesystem_agno)"]
+    B -->|unavailable or fails| C["Step 3: WebFetch\n(official llms-full.txt / llms.txt)"]
+    C -->|unavailable or fails| D["Step 4: WebSearch\n(site: filter on official docs domain)"]
+    D -->|unavailable or fails| E["Step 5: Training data\nMUST warn the user before using this"]
+    A -.->|found current docs| Z["Use in Research Report"]
+    B -.->|found current docs| Z
+    C -.->|found current docs| Z
+    D -.->|found current docs| Z
+    E -.->|used as last resort| Z
+```
+
 ### 4. No domain hardcoding in skills
 
 Skills handle **any domain** through dynamic research. Do not add:
@@ -148,8 +163,8 @@ The structural patterns embedded in skills (file names, module structures, requi
 
 - **Google ADK:** `__init__.py` must contain `from . import agent`; `agent.py` must define `root_agent`
 - **CrewAI:** `crew.py` requires `@CrewBase`, `@agent`, `@task`, `@crew` decorators
-- **LangGraph:** multi-turn memory requires `checkpointer=MemorySaver()`
-- **Agno:** memory requires `SqliteAgentStorage` or equivalent + `add_history_to_messages=True`
+- **LangGraph:** multi-turn memory requires `checkpointer=InMemorySaver()` (from `langgraph.checkpoint.memory`; `MemorySaver` is a deprecated alias for the same class)
+- **Agno:** memory requires `SqliteDb` (from `agno.db.sqlite`) or equivalent + `add_history_to_context=True`
 
 When a framework releases a breaking change, update the structural pattern before the PR merges.
 
