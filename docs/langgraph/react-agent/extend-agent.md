@@ -118,7 +118,7 @@ asyncio.run(stream_run("Tell me the latest AI news"))
 
 ### Extension D — Add Persistent Checkpointer (PostgreSQL)
 
-Replace `MemorySaver` with a persistent backend for production:
+Replace `InMemorySaver` with a persistent backend for production:
 
 ```python
 from langgraph.checkpoint.postgres import PostgresSaver
@@ -145,12 +145,13 @@ Pause the graph before executing a sensitive tool:
 
 ```python
 from langchain.agents import create_agent
+from langgraph.checkpoint.memory import InMemorySaver
 
 graph = create_agent(
     model=model,
     tools=tools,
     system_prompt=SYSTEM_PROMPT,
-    checkpointer=MemorySaver(),
+    checkpointer=InMemorySaver(),
     interrupt_before=["tools"],  # pause before any tool call
 )
 

@@ -3,7 +3,7 @@ import time
 from tests.langgraph.agent import graph as langgraph_graph, model as langgraph_model, SYSTEM_PROMPT
 from tests.langgraph.tools import multiply_numbers
 from langchain.agents import create_agent
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.memory import InMemorySaver
 from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
 from langchain_core.messages import AIMessage, ToolMessage, HumanMessage
 
@@ -24,7 +24,7 @@ def test_langgraph_graph_structure():
     
     # Checkpointer/Memory configurations check
     assert langgraph_graph.checkpointer is not None
-    assert isinstance(langgraph_graph.checkpointer, MemorySaver)
+    assert isinstance(langgraph_graph.checkpointer, InMemorySaver)
     
     # System prompt verification
     assert "multiply_numbers tool" in SYSTEM_PROMPT.lower()
@@ -102,9 +102,9 @@ def test_langgraph_happy_path_mocked():
     test_graph = create_agent(
         model=fake_llm,
         tools=[multiply_numbers],
-        checkpointer=MemorySaver()
+        checkpointer=InMemorySaver()
     )
-    
+
     # 3. Invoke the graph and track latency
     config = {"configurable": {"thread_id": "test-session"}}
     
@@ -153,7 +153,7 @@ def test_langgraph_constraint_refusal_mocked():
     test_graph = create_agent(
         model=fake_llm,
         tools=[multiply_numbers],
-        checkpointer=MemorySaver()
+        checkpointer=InMemorySaver()
     )
 
     config = {"configurable": {"thread_id": "test-session-refusal"}}
@@ -207,7 +207,7 @@ def test_langgraph_edge_case_mocked():
     test_graph = create_agent(
         model=fake_llm,
         tools=[multiply_numbers],
-        checkpointer=MemorySaver()
+        checkpointer=InMemorySaver()
     )
 
     config = {"configurable": {"thread_id": "test-session-edge"}}
