@@ -11,7 +11,8 @@
     "skills"
   ],
   "scripts": {
-    "prepare": "node scripts/prepare.js"
+    "prepare": "node scripts/prepare.js",
+    "test": "node --test"
   },
   "license": "MIT"
 }

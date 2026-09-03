@@ -78,7 +78,7 @@ uv run pytest
 
 ### Continuous Integration
 
-Every push and pull request runs all four showcases (non-`live` tests only) across Ubuntu, macOS, and Windows in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) — no repository secrets required, since tests use mocked model calls. See the [Live Landing Page](https://cloudbloqavi.github.io/recursive-agentic-improvements/) or the diagram below for the pipeline shape:
+Every push and pull request runs all four showcases (non-`live` tests only) plus the installer's unit tests, across Ubuntu, macOS, and Windows, in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) — no repository secrets required, since the showcase tests use mocked model calls and the installer tests only touch temp directories. See the [Live Landing Page](https://cloudbloqavi.github.io/recursive-agentic-improvements/) or the diagram below for the pipeline shape:
 
 ```mermaid
 flowchart LR
@@ -90,13 +90,15 @@ flowchart LR
         B2[tests/crewai]
         B3[tests/langgraph]
         B4[tests/google_adk]
+        B5[installer/]
     end
-    A --> B1 & B2 & B3 & B4
+    A --> B1 & B2 & B3 & B4 & B5
     B1 --> C1["uv sync && uv run pytest -m 'not live'"]
     B2 --> C2["uv sync && uv run pytest -m 'not live'"]
     B3 --> C3["uv sync && uv run pytest -m 'not live'"]
     B4 --> C4["uv sync && uv run pytest -m 'not live'"]
-    C1 & C2 & C3 & C4 --> D{All green?}
+    B5 --> C5["npm test"]
+    C1 & C2 & C3 & C4 & C5 --> D{All green?}
     D -->|Yes| E[✅ CI passes]
     D -->|No| F[❌ Block merge]
 ```

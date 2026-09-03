@@ -179,7 +179,15 @@ for (const skill of skills) {
 // ---------------------------------------------------------------------------
 // Install TEST_CONSTITUTION.md (skip for codex — root would be cluttered)
 // ---------------------------------------------------------------------------
-const constSrcPath = path.join(sourceDir, 'TEST_CONSTITUTION.md');
+// The packaged installer keeps it alongside the skills (skills/), but a dev
+// checkout (no `npm run prepare` yet) only has it under tests/ at repo root.
+let constSrcPath = path.join(sourceDir, 'TEST_CONSTITUTION.md');
+if (!fs.existsSync(constSrcPath)) {
+  const devConstPath = path.resolve(__dirname, '..', '..', 'tests', 'TEST_CONSTITUTION.md');
+  if (fs.existsSync(devConstPath)) {
+    constSrcPath = devConstPath;
+  }
+}
 if (fs.existsSync(constSrcPath) && agentName !== 'codex') {
   const testsDirName =
     fs.existsSync(path.join(targetProject, 'test')) && !fs.existsSync(path.join(targetProject, 'tests'))

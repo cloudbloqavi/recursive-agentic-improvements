@@ -143,6 +143,8 @@ flowchart TD
     E -.->|used as last resort| Z
 ```
 
+An interactive version of this diagram is on the [live landing page, "Fallback Chain" section](https://cloudbloqavi.github.io/recursive-agentic-improvements/#fallback).
+
 ### 4. No domain hardcoding in skills
 
 Skills handle **any domain** through dynamic research. Do not add:
@@ -423,6 +425,7 @@ Every PR that modifies `.claude/commands/*.md` must confirm in the PR descriptio
 ### Self-testing a skill in isolation
 
 ```bash
+# macOS / Linux
 # 1. Create an isolated test project (validates standalone contract)
 mkdir /tmp/test-agent-project && cd /tmp/test-agent-project
 git init
@@ -444,6 +447,21 @@ export ANTHROPIC_API_KEY=sk-...
 #   - Code written only after confirmation
 #   - All 3 smoke probes pass
 #   - No import errors in logs
+```
+
+```powershell
+# Windows (PowerShell) — same 5 steps, native syntax
+New-Item -ItemType Directory -Path "$env:TEMP\test-agent-project" | Out-Null
+Set-Location "$env:TEMP\test-agent-project"
+git init
+pip install agno   # or crewai / langgraph / google-adk
+
+New-Item -ItemType Directory -Path ".claude\commands" -Force | Out-Null
+Copy-Item C:\path\to\recursive-agentic-improvements\.claude\commands\create-agent.md .claude\commands\
+
+$env:ANTHROPIC_API_KEY = "sk-..."
+
+# Then open Claude Code and run the skill, and verify the same 5 checks as above.
 ```
 
 ---
