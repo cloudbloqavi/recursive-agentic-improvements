@@ -28,6 +28,8 @@ This project is organized to separate the Claude Code skills, reference guides, 
 | **Showcase Guidelines** | Running and testing sandbox agents for each framework. | [Showcase README](tests/README.md) |
 | **CI Pipeline** | How pushes/PRs are tested (matrix, diagram, no-secrets policy). | [Continuous Integration section](tests/README.md#continuous-integration) |
 | **Contributor Guidelines** | Developer instructions and testing protocol. | [CLAUDE.md](CLAUDE.md) |
+| **Cross-Tool Pointer** | Entry point for AGENTS.md-aware tools (Codex, etc.) — points to CLAUDE.md. | [AGENTS.md](AGENTS.md) |
+| **Security Policy** | How to report a security concern. | [SECURITY.md](SECURITY.md) |
 | **License** | MIT License terms. | [LICENSE](LICENSE) |
 
 ---
@@ -105,7 +107,7 @@ The `docs/` directory contains framework-agnostic entry points and specific guid
 
 ## 🎯 Design Principles
 
-*   **Research Before Code**: Skills query live documentation via MCP servers or search APIs to identify native tools and imports before generating files. See the [MCP fallback chain diagram](CLAUDE.md#3-mcp-fallback-chain-must-be-complete) for the exact lookup order and why it matters.
+*   **Research Before Code**: Skills query live documentation via MCP servers or search APIs to identify native tools and imports before generating files. See the [MCP fallback chain diagram](CLAUDE.md#3-mcp-fallback-chain-must-be-complete) (or the [interactive version](https://cloudbloqavi.github.io/recursive-agentic-improvements/#fallback)) for the exact lookup order and why it matters.
 *   **Blueprint Gatekeeping**: All operations generate a detailed blueprint that requires explicit developer confirmation before executing disk writes.
 *   **The Spec is the Source of Truth**: Agent behavioral probe suites are dynamically derived from the agent's prompt/system instructions (`INSTRUCTIONS`), verifying promises directly.
 *   **Determinism by Default**: Evaluation layers use mocked models (`GenericFakeChatModel` or unittest mocks) to run offline-friendly, fast, and key-free test suites.

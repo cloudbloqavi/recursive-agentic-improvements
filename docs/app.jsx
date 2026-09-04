@@ -81,6 +81,14 @@ const PRINCIPLES = [
   { t: "Determinism by Default", d: "Evaluation uses mocked models, so suites run offline-friendly, fast, and without API keys." },
 ];
 
+const FALLBACK_STEPS = [
+  { t: "MCP tool", d: "e.g. search_agno — a live docs server built for that framework.", tone: "glow" },
+  { t: "Filesystem MCP", d: "e.g. query_docs_filesystem_agno — local, indexed docs.", tone: "cyan" },
+  { t: "WebFetch", d: "The framework's official llms-full.txt / llms.txt.", tone: "cyan" },
+  { t: "WebSearch", d: "Site-filtered search on the official docs domain.", tone: "warn" },
+  { t: "Training data", d: "Last resort only — the skill must warn you first.", tone: "danger" },
+];
+
 /* ───────────────────── primitives ───────────────────── */
 function CopyButton({ text, label = "copy" }) {
   const [done, setDone] = useState(false);
@@ -159,6 +167,25 @@ function SkillCard({ s, open, onToggle }) {
   );
 }
 
+function ChainDiagram() {
+  return (
+    <div className="chain">
+      {FALLBACK_STEPS.map((s, i) => (
+        <React.Fragment key={s.t}>
+          <div className={"chain-step tone-" + s.tone}>
+            <span className="chain-num">{i + 1}</span>
+            <div>
+              <div className="chain-t">{s.t}</div>
+              <p className="chain-d">{s.d}</p>
+            </div>
+          </div>
+          {i < FALLBACK_STEPS.length - 1 && <span className="chain-arrow" aria-hidden>→</span>}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
+
 function Frameworks() {
   const [act, setAct] = useState(0);
   const f = FRAMEWORKS[act];
@@ -212,6 +239,7 @@ function App() {
             <a href="#skills">Skills</a>
             <a href="#frameworks">Frameworks</a>
             <a href="#principles">Principles</a>
+            <a href="#fallback">Fallback Chain</a>
             <a className="nav-gh" href={REPO} target="_blank" rel="noopener">★ GitHub</a>
           </nav>
         </div>
@@ -281,6 +309,12 @@ function App() {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* FALLBACK CHAIN */}
+        <section id="fallback" className="sec wrap">
+          <SecHead n="04" title="Every skill checks docs in this order" sub="Frameworks change their APIs faster than any model's training data — so live docs always win. Each step is only tried if the one before it is unavailable or fails." />
+          <ChainDiagram />
         </section>
 
         {/* CTA STRIP */}
