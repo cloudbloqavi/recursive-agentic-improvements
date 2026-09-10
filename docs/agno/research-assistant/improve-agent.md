@@ -1,5 +1,7 @@
 # Agno Research Assistant — Improve Agent
 
+<!-- Validated against: agno==2.9.0 — 2026-09-10 -->
+
 Harden the research assistant against factual failures, citation gaps, and poor tool selection.
 
 ---

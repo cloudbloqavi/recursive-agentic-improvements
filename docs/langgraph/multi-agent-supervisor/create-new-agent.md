@@ -1,5 +1,7 @@
 # LangGraph Multi-Agent Supervisor — Create New Agent
 
+<!-- Validated against: langgraph==1.2.11 — 2026-09-10 -->
+
 Create a multi-agent system where a supervisor LLM routes tasks to specialist sub-agents using LangGraph. This pattern is ideal for systems that need different tools or expertise for different query types.
 
 ---

@@ -1,5 +1,7 @@
 # Agno Chatbot — Extend Agent
 
+<!-- Validated against: agno==2.9.0 — 2026-09-10 -->
+
 Add a new capability, tool, or behaviour to an existing Agno chatbot agent without breaking existing functionality.
 
 ---

@@ -1,5 +1,7 @@
 # LangGraph ReAct Agent — Extend Agent
 
+<!-- Validated against: langgraph==1.2.11 — 2026-09-10 -->
+
 Add new tools, custom state, streaming, or persistence to an existing LangGraph ReAct agent.
 
 ---

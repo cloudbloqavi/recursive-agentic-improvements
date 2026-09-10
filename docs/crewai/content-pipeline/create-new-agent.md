@@ -1,5 +1,7 @@
 # CrewAI Content Pipeline — Create New Agent
 
+<!-- Validated against: crewai==1.15.17 — 2026-09-10 -->
+
 Create a multi-agent content generation crew using CrewAI. A content pipeline typically produces blog posts, social media content, newsletters, or marketing copy through a chain of specialist agents.
 
 ---

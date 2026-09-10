@@ -1,5 +1,7 @@
 # LangGraph ReAct Agent — Create New Agent
 
+<!-- Validated against: langgraph==1.2.11 — 2026-09-10 -->
+
 Create a stateful, tool-using ReAct (Reasoning + Acting) agent using LangGraph. This is the foundational LangGraph pattern: a graph with an `agent` node and a `tools` node in a loop.
 
 ---

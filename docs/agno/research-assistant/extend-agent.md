@@ -1,5 +1,7 @@
 # Agno Research Assistant — Extend Agent
 
+<!-- Validated against: agno==2.9.0 — 2026-09-10 -->
+
 Add new data sources, analytical capabilities, or output formats to an existing Agno research assistant.
 
 ---

@@ -1,5 +1,7 @@
 # Agno Chatbot — Improve Agent
 
+<!-- Validated against: agno==2.9.0 — 2026-09-10 -->
+
 Recursively test and improve an existing Agno chatbot agent by deriving probes from its `INSTRUCTIONS`, running them against the live agent, and applying targeted fixes for every failure.
 
 ---

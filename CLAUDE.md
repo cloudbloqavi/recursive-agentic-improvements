@@ -260,6 +260,8 @@ This repo has no runtime dependencies. The skills are Markdown files that Claude
 
 Restart Claude Code after adding MCP servers.
 
+**Discovering MCP servers for a new framework:** check the official [MCP Registry](https://registry.modelcontextprotocol.io) first — it is the community-maintained, searchable index of public MCP servers (launched Sept 2025) and is faster to check than guessing a docs-site URL. Only fall back to a manual `llms.txt`/`llms-full.txt` search when the registry has no entry for the framework.
+
 **No build step, no linter, no test runner for this repo itself.** Testing is end-to-end: install the skill into a live project and run it.
 
 ---
@@ -526,7 +528,7 @@ chore(install): add --dry-run flag to PowerShell installer
 ### In this repo generally
 
 - **Do not run `git add .`** (see .gitignore trap).
-- **Dependencies management** is centralized in `pyproject.toml` at the root, and packages should be managed via the `uv` toolchain.
+- **Dependencies management** uses the `uv` toolchain. There is no root-level `pyproject.toml` — each framework showcase under `tests/<framework>/` has its own isolated `pyproject.toml` and `uv.lock` (see [Showcase README](tests/README.md)).
 - **Do not generate example agents in this repo.** Generated agents live in other projects.
 - **Do not add a separate CONTRIBUTING.md** that contradicts this file. This CLAUDE.md is the contribution guide.
 - **Do not add CI that requires repository secrets.** Keep CI runnable with public permissions.
@@ -586,7 +588,7 @@ Update this table whenever a framework is added, removed, or a minimum version c
 | Agno | 2.9.0 | MCP + llms-full.txt | `https://docs.agno.com/mcp` | Use `Claude(id=...)` for Anthropic models |
 | CrewAI | 1.15.17 | MCP + llms.txt | `https://docs.crewai.com/mcp` | `crewai create crew <slug>` to scaffold |
 | LangGraph | 1.2.11 | MCP + llms.txt | `https://docs.langchain.com/mcp` | `create_react_agent` moved to `langchain.agents.create_agent` (V1.0+); requires `LANGSMITH_API_KEY` for tracing |
-| Google ADK | 2.7.1 | WebFetch llms.txt | No MCP server | `root_agent` must be defined in `agent.py` |
+| Google ADK | 2.8.0 | WebFetch llms.txt | No MCP server | `root_agent` must be defined in `agent.py` |
 
 ---
 
