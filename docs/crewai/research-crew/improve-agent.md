@@ -1,5 +1,7 @@
 # CrewAI Research Crew — Improve Agent
 
+<!-- Validated against: crewai==1.15.17 — 2026-09-10 -->
+
 Iteratively improve a CrewAI research crew by testing its agents and tasks against derived probes and fixing each failure.
 
 ---

@@ -1,5 +1,7 @@
 # Agno Research Assistant — Create New Agent
 
+<!-- Validated against: agno==2.9.0 — 2026-09-10 -->
+
 Create a research-capable Agno agent that uses web search, knowledge bases, and structured reporting to answer complex questions.
 
 ---

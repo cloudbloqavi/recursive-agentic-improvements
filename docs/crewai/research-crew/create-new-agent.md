@@ -1,5 +1,7 @@
 # CrewAI Research Crew — Create New Agent
 
+<!-- Validated against: crewai==1.15.17 — 2026-09-10 -->
+
 Create a multi-agent research crew using CrewAI. A research crew typically has a researcher who gathers data and an analyst who synthesises findings into a report.
 
 ---

@@ -1,5 +1,7 @@
 # Google ADK Tool-Using Agent — Extend Agent
 
+<!-- Validated against: google-adk==2.8.0 — 2026-09-10 -->
+
 Add new tools, MCP server integrations, or sub-agents to an existing ADK tool-using agent.
 
 ---

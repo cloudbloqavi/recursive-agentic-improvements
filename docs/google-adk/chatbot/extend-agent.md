@@ -1,5 +1,7 @@
 # Google ADK Chatbot — Extend Agent
 
+<!-- Validated against: google-adk==2.8.0 — 2026-09-10 -->
+
 Add new tools, sub-agents, or capabilities to an existing Google ADK chatbot.
 
 ---

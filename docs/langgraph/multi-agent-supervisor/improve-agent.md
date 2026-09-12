@@ -1,5 +1,7 @@
 # LangGraph Multi-Agent Supervisor — Improve Agent
 
+<!-- Validated against: langgraph==1.2.11 — 2026-09-10 -->
+
 Improve a LangGraph multi-agent supervisor system by testing routing decisions, agent handoffs, and output quality.
 
 ---

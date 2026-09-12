@@ -1,5 +1,7 @@
 # CrewAI Content Pipeline — Improve Agent
 
+<!-- Validated against: crewai==1.15.17 — 2026-09-10 -->
+
 Harden the content pipeline against quality failures: generic content, broken handoffs, off-brand voice, and poor structure.
 
 ---

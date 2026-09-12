@@ -1,5 +1,7 @@
 # Google ADK Tool-Using Agent — Create New Agent
 
+<!-- Validated against: google-adk==2.8.0 — 2026-09-10 -->
+
 Create an ADK agent that heavily relies on tools to accomplish structured tasks: data retrieval, API integration, code execution, or workflow automation.
 
 ---

@@ -1,5 +1,7 @@
 # LangGraph ReAct Agent — Improve Agent
 
+<!-- Validated against: langgraph==1.2.11 — 2026-09-10 -->
+
 Iteratively improve a LangGraph ReAct agent using LangSmith evaluation, probe-driven testing, and targeted fixes to the system prompt and graph structure.
 
 ---

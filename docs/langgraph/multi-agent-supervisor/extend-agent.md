@@ -1,5 +1,7 @@
 # LangGraph Multi-Agent Supervisor — Extend Agent
 
+<!-- Validated against: langgraph==1.2.11 — 2026-09-10 -->
+
 Add new specialist agents, better state management, or parallel execution to a LangGraph multi-agent supervisor.
 
 ---

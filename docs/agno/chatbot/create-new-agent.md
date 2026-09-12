@@ -1,5 +1,7 @@
 # Agno Chatbot — Create New Agent
 
+<!-- Validated against: agno==2.9.0 — 2026-09-10 -->
+
 Create a stateful, multi-turn conversational agent using the Agno framework. This guide covers everything from project structure to smoke tests.
 
 ---

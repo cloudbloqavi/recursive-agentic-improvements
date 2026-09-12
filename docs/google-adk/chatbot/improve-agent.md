@@ -1,5 +1,7 @@
 # Google ADK Chatbot — Improve Agent
 
+<!-- Validated against: google-adk==2.8.0 — 2026-09-10 -->
+
 Iteratively improve a Google ADK chatbot by deriving probes from its `instruction`, running them, and applying targeted fixes.
 
 ---
